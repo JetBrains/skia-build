@@ -10,7 +10,7 @@ env:
   # version: m87
   skia_branch: chrome/m87
   skia_commit: a0c82f08df58dcd0e1d143db9ccab38f8d823b95
-  release: m87-test3
+  release: m87-a0c82f0
 
 jobs:
   macos:
