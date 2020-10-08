@@ -4,44 +4,43 @@ on:
       - master
     paths:
       - .github/workflows/**
-      - build_*.sh
-      - version
+      - "*.sh"
 
 env:
+  # version: m87
   skia_branch: chrome/m87
   skia_commit: a0c82f08df58dcd0e1d143db9ccab38f8d823b95
-  release_tag: m87-a0c82f0
-  version: m87
+  release: m87-a0c82f0
 
 jobs:
-  # macos:
-  #   runs-on: macos-10.15
-  #   steps:
-  #     - uses: actions/checkout@v2
-  #     - run: ./build_macos.sh
-  #     - uses: actions/upload-artifact@v2
-  #       with:
-  #         name: skia-macos
-  #         path: "*.zip"
+  macos:
+    runs-on: macos-10.15
+    steps:
+      - uses: actions/checkout@v2
+      - run: ./build_macos.sh
+      - uses: actions/upload-artifact@v2
+        with:
+          name: skia-macos
+          path: "*.zip"
 
-  # linux:
-  #   runs-on: ubuntu-16.04
-  #   steps:
-  #     - uses: actions/checkout@v2
-  #     - name: Install GCC 9
-  #       run: |
-  #         sudo apt install -y ninja-build libglu1-mesa-dev
-  #         sudo add-apt-repository -y ppa:ubuntu-toolchain-r/test
-  #         sudo apt update -y
-  #         sudo apt install -y gcc-9 g++-9
-  #         sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-9 60 --slave /usr/bin/g++ g++ /usr/bin/g++-9
-  #         sudo update-alternatives --config gcc
-  #         gcc --version
-  #     - run: ./build_linux.sh
-  #     - uses: actions/upload-artifact@v2
-  #       with:
-  #         name: skia-linux
-  #         path: "*.zip"
+  linux:
+    runs-on: ubuntu-16.04
+    steps:
+      - uses: actions/checkout@v2
+      - name: Install GCC 9
+        run: |
+          sudo apt install -y ninja-build libglu1-mesa-dev
+          sudo add-apt-repository -y ppa:ubuntu-toolchain-r/test
+          sudo apt update -y
+          sudo apt install -y gcc-9 g++-9
+          sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-9 60 --slave /usr/bin/g++ g++ /usr/bin/g++-9
+          sudo update-alternatives --config gcc
+          gcc --version
+      - run: ./build_linux.sh
+      - uses: actions/upload-artifact@v2
+        with:
+          name: skia-linux
+          path: "*.zip"
 
   windows:
     runs-on: windows-2019

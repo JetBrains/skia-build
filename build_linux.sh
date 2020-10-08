@@ -2,31 +2,7 @@
 set -o errexit -o nounset -o pipefail
 cd "`dirname $0`"
 
-if [ ! -d "depot_tools" ]; then
-  git clone 'https://chromium.googlesource.com/chromium/tools/depot_tools.git'
-fi
-export PATH="${PWD}/depot_tools:${PATH}"
-
-version=`cat version`
-branch="chrome/${version}"
-
-if [ -d "skia" ]; then
-  pushd skia
-  if [ -n "$(git branch --list ${branch})" ]; then
-    echo "Advancing ${branch}"
-    git checkout -B ${branch}
-    git fetch
-    git reset --hard origin/${branch}
-  else
-    echo "Fetching ${branch}"
-    git fetch origin ${branch}:remotes/origin/${branch}
-    git checkout -b ${branch}
-  fi
-else
-  echo "Cloning ${branch}"
-  git clone https://skia.googlesource.com/skia --quiet --depth 1 --branch ${branch}
-  pushd skia
-fi
+source ./checkout.sh
 
 python2 tools/git-sync-deps
 gn gen out/Release-x64 --args="is_debug=false is_official_build=true skia_use_system_expat=false skia_use_system_icu=false \
@@ -36,7 +12,7 @@ gn gen out/Release-x64 --args="is_debug=false is_official_build=true skia_use_sy
   target_cpu=\"x64\" extra_cflags_cc=[\"-frtti\"] cxx=\"g++-9\""
 ninja -C out/Release-x64 skia modules
 
-zip --recurse-paths --quiet ../Skia-${version}-linux-Release-x64.zip \
+zip --recurse-paths --quiet ../Skia-${release}-linux-Release-x64.zip \
   out/Release-x64/*.a \
   include \
   modules/particles/include/*.h \
