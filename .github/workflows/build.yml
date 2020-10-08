@@ -10,7 +10,7 @@ env:
   # version: m87
   skia_branch: chrome/m87
   skia_commit: a0c82f08df58dcd0e1d143db9ccab38f8d823b95
-  release: m87-a0c82f0
+  release: m87-test3
 
 jobs:
   macos:
@@ -18,10 +18,9 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - run: ./build_macos.sh
-      - uses: actions/upload-artifact@v2
-        with:
-          name: skia-macos
-          path: "*.zip"
+      - run: ./release.sh
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
   linux:
     runs-on: ubuntu-16.04
@@ -37,10 +36,9 @@ jobs:
           sudo update-alternatives --config gcc
           gcc --version
       - run: ./build_linux.sh
-      - uses: actions/upload-artifact@v2
-        with:
-          name: skia-linux
-          path: "*.zip"
+      - run: ./release.sh
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
   windows:
     runs-on: windows-2019
@@ -50,7 +48,6 @@ jobs:
       - uses: ilammy/msvc-dev-cmd@v1.3.0
       - shell: bash
         run: ./build_windows.sh
-      - uses: actions/upload-artifact@v2
-        with:
-          name: skija-windows
-          path: "*.zip"
+      - run: ./release.sh
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
