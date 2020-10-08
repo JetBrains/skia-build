@@ -36,7 +36,7 @@ gn gen out/Release-x64 --args="is_debug=false is_official_build=true skia_use_sy
   target_cpu=\"x64\" extra_cflags_cc=[\"-frtti\"] cxx=\"g++-9\""
 ninja -C out/Release-x64 skia modules
 
-zip --recurse-paths --quiet ../Skia-${version}-macos-Release-x64.zip \
+zip --recurse-paths --quiet ../Skia-${version}-linux-Release-x64.zip \
   out/Release-x64/*.a \
   include \
   modules/particles/include/*.h \
