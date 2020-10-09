@@ -10,45 +10,47 @@ env:
   # version: m87
   skia_branch: chrome/m87
   skia_commit: a0c82f08df58dcd0e1d143db9ccab38f8d823b95
-  release: m87-a0c82f0
+  release: m87-container
 
 jobs:
 
-  macos:
-    runs-on: macos-10.15
-    steps:
-      - uses: actions/checkout@v2
-      - run: ./build_macos.sh
-      - run: ./release.sh
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  # macos:
+  #   runs-on: macos-10.15
+  #   steps:
+  #     - uses: actions/checkout@v2
+  #     - run: ./build_macos.sh
+  #     - run: ./release.sh
+  #       env:
+  #         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
   linux:
-    runs-on: ubuntu-16.04
+    runs-on: ubuntu-latest
+    container: ubuntu:14.04
     steps:
       - uses: actions/checkout@v2
-      - name: Install GCC 9
-        run: |
-          sudo apt install -y ninja-build libglu1-mesa-dev
-          sudo add-apt-repository -y ppa:ubuntu-toolchain-r/test
-          sudo apt update -y
-          sudo apt install -y gcc-9 g++-9
-          sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-9 60 --slave /usr/bin/g++ g++ /usr/bin/g++-9
-          sudo update-alternatives --config gcc
-          gcc --version
-      - run: ./build_linux.sh
+      # - name: Install GCC 9
+      #   run: |
+      #     sudo apt install -y ninja-build libglu1-mesa-dev
+      #     sudo add-apt-repository -y ppa:ubuntu-toolchain-r/test
+      #     sudo apt update -y
+      #     sudo apt install -y gcc-9 g++-9
+      #     sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-9 60 --slave /usr/bin/g++ g++ /usr/bin/g++-9
+      #     sudo update-alternatives --config gcc
+      #     gcc --version
+      - run: sudo ./prepare_linux.sh
+      - run: PATH=/usr/lib/binutils-2.26/bin:$PATH ./build_linux.sh
       - run: ./release.sh
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-  windows:
-    runs-on: windows-2019
-    steps:
-      - uses: actions/checkout@v2
-      - uses: microsoft/setup-msbuild@v1.0.1
-      - uses: ilammy/msvc-dev-cmd@v1.3.0
-      - shell: bash
-        run: ./build_windows.sh
-      - run: ./release.sh
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  # windows:
+  #   runs-on: windows-2019
+  #   steps:
+  #     - uses: actions/checkout@v2
+  #     - uses: microsoft/setup-msbuild@v1.0.1
+  #     - uses: ilammy/msvc-dev-cmd@v1.3.0
+  #     - shell: bash
+  #       run: ./build_windows.sh
+  #     - run: ./release.sh
+  #       env:
+  #         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
