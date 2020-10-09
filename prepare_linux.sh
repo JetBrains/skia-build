@@ -1,6 +1,5 @@
 #!/bin/bash
 set -o errexit -o nounset -o pipefail
-cd "`dirname $0`"
 
 apt-get update -y
 apt-get install build-essential software-properties-common -y

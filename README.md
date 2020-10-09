@@ -6,6 +6,10 @@ This repo is dedicated to building Skia binaries for use in [Skija](https://gith
 
 Prebuilt binaries can be found [in releases](https://github.com/JetBrains/skia-build/releases).
 
+## Building next version of Skia
+
+Update `skia_branch`, `skia_commit` and `release` in [.github/workflows/build.yml](https://github.com/JetBrains/skia-build/blob/master/.github/workflows/build.yml).
+
 ## Building from scratch
 
 This script will:
