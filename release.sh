@@ -5,11 +5,11 @@ cd "`dirname $0`"
 auth="Authorization: token ${GITHUB_TOKEN}"
 accept="Accept: application/vnd.github.v3+json"
 
-if ! curl --fail --location --silent --show-error --header "${auth}" --header "${accept}" https://api.github.com/repos/tonsky/skia-build/releases/tags/${release} > release.json ; then
+if ! curl --fail --location --silent --show-error --header "${auth}" --header "${accept}" https://api.github.com/repos/JetBrains/skia-build/releases/tags/${release} > release.json ; then
   echo "> Creating release ${release}"
   curl --fail --location --silent --show-error --header "${auth}" --header "${accept}" --request POST \
     --data "{\"tag_name\":\"${release}\"}" \
-    https://api.github.com/repos/tonsky/skia-build/releases > release.json
+    https://api.github.com/repos/JetBrains/skia-build/releases > release.json
 else
   echo "> Release ${release} exists"
 fi

@@ -4,7 +4,7 @@ This repo is dedicated to building Skia binaries for use in [Skija](https://gith
 
 ## Prebuilt binaries
 
-Prebuilt binaries can be found [in releases](https://github.com/tonsky/skia-build/releases).
+Prebuilt binaries can be found [in releases](https://github.com/JetBrains/skia-build/releases).
 
 ## Building from scratch
 
