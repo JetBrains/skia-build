@@ -1,19 +1,45 @@
 #!/bin/bash
 set -o errexit -o nounset -o pipefail
+
 cd "`dirname $0`"
 
 source ./checkout.sh
 
-python2 tools/git-sync-deps
-gn gen out/Release-x64 --args="is_debug=false is_official_build=true skia_use_system_expat=false skia_use_system_icu=false \
-  skia_use_system_libjpeg_turbo=false skia_use_system_libpng=false skia_use_system_libwebp=false skia_use_system_zlib=false \
-  skia_use_sfntly=false skia_use_freetype=true skia_use_harfbuzz=true skia_pdf_subset_harfbuzz=true skia_use_system_freetype2=false \
-  skia_enable_gpu=true skia_use_gl=true skia_use_metal=true skia_use_system_harfbuzz=false \
-  target_cpu=\"x64\" extra_cflags=[\"-stdlib=libc++\", \"-mmacosx-version-min=10.13\"] extra_cflags_cc=[\"-frtti\"]"
-ninja -C out/Release-x64 skia modules
+build_type=${build_type:-Release}
+echo "> Build type $build_type"
 
-zip --recurse-paths --quiet ../Skia-${release}-macos-Release-x64.zip \
-  out/Release-x64/*.a \
+if [ "${build_type}" = "Debug" ]; then
+  args="is_debug=true"
+else
+  args="is_debug=false is_official_build=true"
+fi
+
+python2 tools/git-sync-deps
+gn gen out/${build_type}-x64 --args="${args} \
+  skia_use_system_expat=false \
+  skia_use_system_libjpeg_turbo=false \
+  skia_use_system_libpng=false \
+  skia_use_system_libwebp=false \
+  skia_use_system_zlib=false \
+  skia_use_sfntly=false \
+  skia_use_freetype=true \
+  skia_use_system_freetype2=false \
+  skia_use_harfbuzz=true \
+  skia_use_system_harfbuzz=false \
+  skia_pdf_subset_harfbuzz=true \
+  skia_use_icu=true \
+  skia_use_system_icu=false \
+  skia_enable_skshaper=true \
+  skia_enable_gpu=true \
+  skia_use_gl=true \
+  skia_use_metal=true \
+  target_cpu=\"x64\" \
+  extra_cflags=[\"-stdlib=libc++\", \"-mmacosx-version-min=10.13\"] \
+  extra_cflags_cc=[\"-frtti\"]"
+ninja -C out/${build_type}-x64 skia modules
+
+zip --recurse-paths --quiet ../Skia-${release}-macos-${build_type}-x64.zip \
+  out/${build_type}-x64/*.a \
   include \
   modules/particles/include/*.h \
   modules/skottie/include/*.h \
@@ -22,8 +48,10 @@ zip --recurse-paths --quiet ../Skia-${release}-macos-Release-x64.zip \
   modules/skresources/include/*.h \
   modules/sksg/include/*.h \
   modules/skshaper/include/*.h \
+  modules/skshaper/src/*.h \
   src/core/*.h \
   src/gpu/gl/*.h \
+  src/utils/*.h \
   third_party/externals/angle2/LICENSE \
   third_party/externals/angle2/include \
   third_party/externals/freetype/docs/FTL.TXT \

@@ -9,16 +9,21 @@ on:
 env:
   # version: m87
   skia_branch: chrome/m87
-  skia_commit: a0c82f08df58dcd0e1d143db9ccab38f8d823b95
-  release: m87-a0c82f0
+  skia_commit: 489348851cca51b23f522734b6db3c785ffdfaed
+  release: m87-4893488
 
 jobs:
 
   macos:
     runs-on: macos-10.15
+    strategy:
+      matrix:
+        build_type: [Release, Debug]
     steps:
       - uses: actions/checkout@v2
       - run: ./build_macos.sh
+        env:
+          build_type: ${{ matrix.build_type }}
       - run: ./release.sh
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -26,22 +31,32 @@ jobs:
   linux:
     runs-on: ubuntu-latest
     container: ubuntu:14.04
+    strategy:
+      matrix:
+        build_type: [Release, Debug]
     steps:
       - uses: actions/checkout@v2
       - run: sudo ./prepare_linux.sh
       - run: PATH=/usr/lib/binutils-2.26/bin:$PATH ./build_linux.sh
+        env:
+          build_type: ${{ matrix.build_type }}
       - run: ./release.sh
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
   windows:
     runs-on: windows-2019
+    strategy:
+      matrix:
+        build_type: [Release, Debug]
     steps:
       - uses: actions/checkout@v2
       - uses: microsoft/setup-msbuild@v1.0.1
       - uses: ilammy/msvc-dev-cmd@v1.3.0
       - shell: bash
         run: ./build_windows.sh
+        env:
+          build_type: ${{ matrix.build_type }}
       - run: ./release.sh
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

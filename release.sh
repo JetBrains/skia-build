@@ -14,10 +14,12 @@ else
   echo "> Release ${release} exists"
 fi
 
-archive=`ls *.zip`
-[[ $(cat release.json | grep '"upload_url"') =~ https://.*/assets ]]
-upload_url="${BASH_REMATCH[0]}?name=${archive}"
-rm release.json
+for archive in *.zip; do 
+  [[ $(cat release.json | grep '"upload_url"') =~ https://.*/assets ]]
+  upload_url="${BASH_REMATCH[0]}?name=${archive}"
 
-echo "Uploading ${archive} to ${upload_url}"
-curl --fail --location --silent --show-error --header "${auth}" --header "${accept}" --header "Content-Type: application/zip" --request POST --data-binary "@${archive}" ${upload_url}
+  echo "Uploading ${archive} to ${upload_url}"
+  curl --fail --location --silent --show-error --header "${auth}" --header "${accept}" --header "Content-Type: application/zip" --request POST --data-binary "@${archive}" ${upload_url}
+done
+
+rm release.json

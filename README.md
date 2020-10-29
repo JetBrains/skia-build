@@ -30,6 +30,12 @@ If you want to specify exact commit to build:
 skia_branch=chrome/m87 skia_commit=a0c82f08df58dcd0e1d143db9ccab38f8d823b95 release=m87-a0c82f0 ./build_macos.sh
 ```
 
+To build debug version:
+
+```sh
+build_type=Debug version=m87 ./build_macos.sh
+```
+
 ### Building step-by-step
 
 Install `depot_tools` somewhere:

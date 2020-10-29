@@ -5,18 +5,38 @@ cd "`dirname $0`"
 
 source ./checkout.sh
 
-python tools/git-sync-deps
-gn gen out/Release-x64 --args="is_debug=false is_official_build=true skia_use_system_expat=false skia_use_system_icu=false \
-  skia_use_system_libjpeg_turbo=false skia_use_system_libpng=false skia_use_system_libwebp=false skia_use_system_zlib=false \
-  skia_use_sfntly=false skia_use_freetype=true skia_use_harfbuzz=true skia_pdf_subset_harfbuzz=true \
-  skia_use_system_freetype2=false skia_use_system_harfbuzz=false \
-  extra_cflags=[\"-DSK_FONT_HOST_USE_SYSTEM_SETTINGS\"] \
-  target_cpu=\"x64\""
-ninja -C out/Release-x64 skia modules
+build_type=${build_type:-Release}
+echo "> Build type $build_type"
 
-7z a -tzip -r ../Skia-${release}-windows-Release-x64.zip \
-  out/Release-x64/*.lib \
-  out/Release-x64/icudtl.dat \
+if [ "${build_type}" = "Debug" ]; then
+  args="is_debug=true"
+else
+  args="is_debug=false is_official_build=true"
+fi
+
+python tools/git-sync-deps
+gn gen out/${build_type}-x64 --args="${args} \
+  skia_use_system_expat=false \
+  skia_use_system_libjpeg_turbo=false \
+  skia_use_system_libpng=false \
+  skia_use_system_libwebp=false \
+  skia_use_system_zlib=false \
+  skia_use_sfntly=false \
+  skia_use_freetype=true \
+  skia_use_system_freetype2=false \
+  skia_use_harfbuzz=true \
+  skia_use_system_harfbuzz=false \
+  skia_pdf_subset_harfbuzz=true \
+  skia_use_icu=true \
+  skia_use_system_icu=false \
+  skia_enable_skshaper=true \
+  target_cpu=\"x64\" \
+  extra_cflags=[\"-DSK_FONT_HOST_USE_SYSTEM_SETTINGS\"]"
+ninja -C out/${build_type}-x64 skia modules
+
+7z a -tzip -r ../Skia-${release}-windows-${build_type}-x64.zip \
+  out/${build_type}-x64/*.lib \
+  out/${build_type}-x64/icudtl.dat \
   include \
   modules/particles/include/*.h \
   modules/skottie/include/*.h \
@@ -25,8 +45,10 @@ ninja -C out/Release-x64 skia modules
   modules/skresources/include/*.h \
   modules/sksg/include/*.h \
   modules/skshaper/include/*.h \
+  modules/skshaper/src/*.h \
   src/core/*.h \
   src/gpu/gl/*.h \
+  src/utils/*.h \
   third_party/externals/angle2/LICENSE \
   third_party/externals/angle2/include \
   third_party/externals/freetype/docs/FTL.TXT \
