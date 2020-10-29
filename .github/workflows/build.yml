@@ -19,11 +19,20 @@ jobs:
     strategy:
       matrix:
         build_type: [Release, Debug]
+      fail-fast: false
+    env:
+      platform: macos
+      build_type: ${{ matrix.build_type }}
     steps:
       - uses: actions/checkout@v2
-      - run: ./build_macos.sh
+      - run: ./check_release.sh
         env:
-          build_type: ${{ matrix.build_type }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - run: ./build_macos.sh
+      - uses: actions/upload-artifact@v2
+        with:
+          name: Skia-macos-${{ matrix.build_type }}-x64.zip
+          path: '*.zip'
       - run: ./release.sh
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -34,12 +43,21 @@ jobs:
     strategy:
       matrix:
         build_type: [Release, Debug]
+      fail-fast: false
+    env:
+      platform: linux
+      build_type: ${{ matrix.build_type }}
     steps:
       - uses: actions/checkout@v2
       - run: sudo ./prepare_linux.sh
-      - run: PATH=/usr/lib/binutils-2.26/bin:$PATH ./build_linux.sh
+      - run: ./check_release.sh
         env:
-          build_type: ${{ matrix.build_type }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - run: PATH=/usr/lib/binutils-2.26/bin:$PATH ./build_linux.sh
+      - uses: actions/upload-artifact@v2
+        with:
+          name: Skia-linux-${{ matrix.build_type }}-x64.zip
+          path: '*.zip'
       - run: ./release.sh
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -49,14 +67,25 @@ jobs:
     strategy:
       matrix:
         build_type: [Release, Debug]
+      fail-fast: false
+    env:
+      platform: windows
+      build_type: ${{ matrix.build_type }}
     steps:
       - uses: actions/checkout@v2
+      - shell: bash
+        run: ./check_release.sh
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - uses: microsoft/setup-msbuild@v1.0.1
       - uses: ilammy/msvc-dev-cmd@v1.3.0
       - shell: bash
         run: ./build_windows.sh
-        env:
-          build_type: ${{ matrix.build_type }}
-      - run: ./release.sh
+      - uses: actions/upload-artifact@v2
+        with:
+          name: Skia-windows-${{ matrix.build_type }}-x64.zip
+          path: '*.zip'
+      - shell: bash
+        run: ./release.sh
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
