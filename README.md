@@ -10,7 +10,7 @@ Prebuilt binaries can be found [in releases](https://github.com/JetBrains/skia-b
 
 Update `skia_branch`, `skia_commit` and `release` in [.github/workflows/build.yml](https://github.com/JetBrains/skia-build/blob/master/.github/workflows/build.yml).
 
-## Building from scratch
+## Building locally
 
 This script will:
 
@@ -36,37 +36,14 @@ To build debug version:
 build_type=Debug version=m87 ./build_macos.sh
 ```
 
-### Building step-by-step
-
-Install `depot_tools` somewhere:
+To build a zip archive at the end:
 
 ```sh
-git clone 'https://chromium.googlesource.com/chromium/tools/depot_tools.git'
-export PATH="${PWD}/depot_tools:${PATH}"
+archive=true version=m87 ./build_macos.sh
 ```
 
-Check out `skia`:
+To skip checkout (e.g. for builds with local changes):
 
 ```sh
-git clone https://skia.googlesource.com/skia
-cd skia
-git checkout chrome/m87
-```
-
-Build Skia (macOS):
-
-`gn` and `ninja` requires `python2` for successful work 
-
-So next configuration command would be useful if you have several python distribution installed
-
-```sh
-echo 'script_executable = "python2"' >> ./third_party/skia/.gn
-```
-
-Run build:
-
-```sh
-python2 tools/git-sync-deps
-gn gen out/Release-x64 --args="is_debug=false is_official_build=true skia_use_system_expat=false skia_use_system_icu=false skia_use_system_libjpeg_turbo=false skia_use_system_libpng=false skia_use_system_libwebp=false skia_use_system_zlib=false skia_use_sfntly=false skia_use_freetype=true skia_use_harfbuzz=true skia_pdf_subset_harfbuzz=true skia_use_system_freetype2=false skia_use_system_harfbuzz=false target_cpu=\"x64\" extra_cflags=[\"-stdlib=libc++\", \"-mmacosx-version-min=10.9\"] extra_cflags_cc=[\"-frtti\"]"
-ninja -C out/Release-x64 skia modules
+checkout=false version=m87 ./build_macos.sh
 ```
