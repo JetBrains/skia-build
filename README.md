@@ -21,29 +21,29 @@ This script will:
 - produce redistributable zip.
 
 ```sh
-version=m87 ./build_macos.sh
+version=m88 ./build_macos.sh
 ```
 
 If you want to specify exact commit to build:
 
 ```sh
-skia_branch=chrome/m87 skia_commit=a0c82f08df58dcd0e1d143db9ccab38f8d823b95 release=m87-a0c82f0 ./build_macos.sh
+skia_branch=chrome/m88 skia_commit=59bafeeaa7de9eb753e3778c414e01dcf013dcd8 release=m88-59bafeeaa7 ./build_macos.sh
 ```
 
 To build debug version:
 
 ```sh
-build_type=Debug version=m87 ./build_macos.sh
+build_type=Debug version=m88 ./build_macos.sh
 ```
 
 To build a zip archive at the end:
 
 ```sh
-archive=true version=m87 ./build_macos.sh
+archive=true version=m88 ./build_macos.sh
 ```
 
 To skip checkout (e.g. for builds with local changes):
 
 ```sh
-checkout=false version=m87 ./build_macos.sh
+checkout=false version=m88 ./build_macos.sh
 ```

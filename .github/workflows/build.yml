@@ -7,10 +7,10 @@ on:
       - "*.sh"
 
 env:
-  # version: m87
-  skia_branch: chrome/m87
-  skia_commit: 489348851cca51b23f522734b6db3c785ffdfaed
-  release: m87-4893488
+  # version: m88
+  skia_branch: chrome/m88
+  skia_commit: 59bafeeaa7de9eb753e3778c414e01dcf013dcd8
+  release: m88-59bafeeaa7
   archive: true
 
 jobs:

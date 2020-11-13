@@ -21,7 +21,7 @@ if [ "${checkout:-true}" != "false" ]; then
     else
       echo "> Fetching ${skia_branch}"
       git fetch origin ${skia_branch}:remotes/origin/${skia_branch}
-      git checkout -b ${skia_branch}
+      git checkout ${skia_branch}
     fi
   else
     echo "> Cloning ${skia_branch}"
