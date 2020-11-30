@@ -9,8 +9,8 @@ on:
 env:
   # version: m88
   skia_branch: chrome/m88
-  skia_commit: 59bafeeaa7de9eb753e3778c414e01dcf013dcd8
-  release: m88-59bafeeaa7
+  skia_commit: b05f80697afd6e8cb2389b77c4e20d88caa30393
+  release: m88-b05f80697a
   archive: true
 
 jobs:
@@ -78,8 +78,8 @@ jobs:
         run: ./check_release.sh
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      - uses: microsoft/setup-msbuild@v1.0.1
-      - uses: ilammy/msvc-dev-cmd@v1.3.0
+      - uses: microsoft/setup-msbuild@v1
+      - uses: ilammy/msvc-dev-cmd@v1
       - shell: bash
         run: ./build_windows.sh
       - uses: actions/upload-artifact@v2

@@ -33,6 +33,7 @@ gn gen out/${build_type}-arm64 --args="${args} \
   skia_use_icu=true \
   skia_use_system_icu=false \
   skia_enable_skshaper=true \
+  skia_enable_svg=true \
   skia_enable_gpu=true \
   skia_use_gl=true \
   skia_use_metal=true \
@@ -54,6 +55,7 @@ if [ "${archive:-false}" = "true" ]; then
     modules/sksg/include/*.h \
     modules/skshaper/include/*.h \
     modules/skshaper/src/*.h \
+    modules/svg/include/*.h \
     src/core/*.h \
     src/gpu/gl/*.h \
     src/utils/*.h \

@@ -33,6 +33,7 @@ gn gen out/${build_type}-x64 --args="${args} \
   skia_use_icu=true \
   skia_use_system_icu=false \
   skia_enable_skshaper=true \
+  skia_enable_svg=true \
   target_cpu=\"x64\" \
   extra_cflags=[\"-DSK_FONT_HOST_USE_SYSTEM_SETTINGS\"]"
 
@@ -51,6 +52,7 @@ if [ "${archive:-false}" = "true" ]; then
     modules/sksg/include/*.h \
     modules/skshaper/include/*.h \
     modules/skshaper/src/*.h \
+    modules/svg/include/*.h \
     src/core/*.h \
     src/gpu/gl/*.h \
     src/utils/*.h \
