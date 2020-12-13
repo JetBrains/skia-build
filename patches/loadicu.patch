@@ -1,0 +1,86 @@
+diff --git a/third_party/icu/SkLoadICU.cpp b/third_party/icu/SkLoadICU.cpp
+index 5b3b153336..2142da01b9 100644
+--- a/third_party/icu/SkLoadICU.cpp
++++ b/third_party/icu/SkLoadICU.cpp
+@@ -15,39 +15,37 @@
+ #include <cstring>
+ #include <mutex>
+ #include <string>
++#include <sstream>
+ 
+ #include "unicode/udata.h"
+ 
+-static void* win_mmap(const char* dataFile) {
+-    if (!dataFile) {
+-        return nullptr;
+-    }
++static void* win_mmap(const std::string& dataFile, std::ostringstream& buffer) {
+     struct FCloseWrapper { void operator()(FILE* f) { fclose(f); } };
+-    std::unique_ptr<FILE, FCloseWrapper> stream(fopen(dataFile, "rb"));
++    std::unique_ptr<FILE, FCloseWrapper> stream(fopen(dataFile.c_str(), "rb"));
+     if (!stream) {
+-        fprintf(stderr, "SkIcuLoader: datafile missing: %s.\n", dataFile);
++        buffer << "SkLoadICU: datafile '" << dataFile << "' is missing" << std::endl;
+         return nullptr;
+     }
+     int fileno = _fileno(stream.get());
+     if (fileno < 0) {
+-        fprintf(stderr, "SkIcuLoader: datafile fileno error.\n");
++        buffer << "SkLoadICU: datafile '" << dataFile << "' fileno error " << fileno << std::endl;
+         return nullptr;
+     }
+     HANDLE file = (HANDLE)_get_osfhandle(fileno);
+     if ((HANDLE)INVALID_HANDLE_VALUE == file) {
+-        fprintf(stderr, "SkIcuLoader: datafile handle error.\n");
++        buffer << "SkLoadICU: datafile '" << dataFile << "' handle error" << std::endl;
+         return nullptr;
+     }
+     struct CloseHandleWrapper { void operator()(HANDLE h) { CloseHandle(h); } };
+     std::unique_ptr<void, CloseHandleWrapper> mmapHandle(
+         CreateFileMapping(file, nullptr, PAGE_READONLY, 0, 0, nullptr));
+     if (!mmapHandle) {
+-        fprintf(stderr, "SkIcuLoader: datafile mmap error.\n");
++        buffer << "SkLoadICU: datafile '" << dataFile << "' mmap error" << std::endl;
+         return nullptr;
+     }
+     void* addr = MapViewOfFile(mmapHandle.get(), FILE_MAP_READ, 0, 0, 0);
+     if (nullptr == addr) {
+-        fprintf(stderr, "SkIcuLoader: datafile view error.\n");
++        buffer << "SkLoadICU: datafile '" << dataFile << "' view error" << std::endl;
+         return nullptr;
+     }
+     return addr;
+@@ -86,23 +84,20 @@ static std::string executable_directory() {
+     return end ? std::string(path, end - path) : std::string();
+ }
+ 
+-static bool load_from(const std::string& dir) {
+-    auto sPath = dir + "\\icudtl.dat";
+-    if (void* addr = win_mmap(sPath.c_str())) {
+-        if (init_icu(addr)) {
+-            return true;
+-        }
+-    }
+-    return false;
+-}
+-
+ bool SkLoadICU() {
+-    static bool good = false;
++    static bool loaded = false;
+     static std::once_flag flag;
+     std::call_once(flag, []() {
+-        good = load_from(executable_directory()) || load_from(library_directory());
++        std::ostringstream buffer;
++        void* addr = win_mmap(executable_directory() + "\\icudtl.dat", buffer);
++        if (addr == nullptr)
++            addr = win_mmap(library_directory() + "\\icudtl.dat", buffer);
++        if (addr == nullptr)
++            fputs(buffer.str().c_str(), stderr);
++        if (addr)
++            loaded = init_icu(addr);
+     });
+-    return good;
++    return loaded;
+ }
+ 
+ #endif  // defined(_WIN32) && defined(SK_USING_THIRD_PARTY_ICU)

@@ -1,0 +1,25 @@
+diff --git a/src/ports/SkTypeface_win_dw.cpp b/src/ports/SkTypeface_win_dw.cpp
+index 849de7ed61..d404f9dee3 100644
+--- a/src/ports/SkTypeface_win_dw.cpp
++++ b/src/ports/SkTypeface_win_dw.cpp
+@@ -238,15 +238,14 @@ int DWriteFontTypeface::onGetVariationDesignParameters(
+     SkAutoSTMalloc<8, DWRITE_FONT_AXIS_VALUE> fontAxisDefaultValue(fontAxisCount);
+     HR_GENERAL(fontResource->GetDefaultFontAxisValues(fontAxisDefaultValue.get(), fontAxisCount),
+                nullptr, -1);
+-    UINT32 coordIndex = 0;
+
+     for (UINT32 axisIndex = 0; axisIndex < fontAxisCount; ++axisIndex) {
+         if (fontResource->GetFontAxisAttributes(axisIndex) & DWRITE_FONT_AXIS_ATTRIBUTES_VARIABLE) {
+-            parameters[coordIndex].tag = SkEndian_SwapBE32(fontAxisDefaultValue[axisIndex].axisTag);
+-            parameters[coordIndex].min = fontAxisRange[axisIndex].minValue;
+-            parameters[coordIndex].def = fontAxisDefaultValue[axisIndex].value;
+-            parameters[coordIndex].max = fontAxisRange[axisIndex].maxValue;
+-            parameters[coordIndex].setHidden(fontResource->GetFontAxisAttributes(axisIndex) &
++            parameters[axisIndex].tag = SkEndian_SwapBE32(fontAxisDefaultValue[axisIndex].axisTag);
++            parameters[axisIndex].min = fontAxisRange[axisIndex].minValue;
++            parameters[axisIndex].def = fontAxisDefaultValue[axisIndex].value;
++            parameters[axisIndex].max = fontAxisRange[axisIndex].maxValue;
++            parameters[axisIndex].setHidden(fontResource->GetFontAxisAttributes(axisIndex) &
+                                              DWRITE_FONT_AXIS_ATTRIBUTES_HIDDEN);
+         }
+     }

@@ -27,7 +27,7 @@ version=m88 ./build_macos.sh
 If you want to specify exact commit to build:
 
 ```sh
-skia_branch=chrome/m88 skia_commit=59bafeeaa7de9eb753e3778c414e01dcf013dcd8 release=m88-59bafeeaa7 ./build_macos.sh
+skia_branch=chrome/m88 skia_commit=fc6759b235c51ecc84f239b70549380da290d6e9 release=m88-fc6759b235 ./build_macos.sh
 ```
 
 To build debug version:
