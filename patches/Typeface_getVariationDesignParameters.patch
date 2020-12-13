@@ -1,5 +1,5 @@
 diff --git a/src/ports/SkTypeface_win_dw.cpp b/src/ports/SkTypeface_win_dw.cpp
-index 849de7ed61..d404f9dee3 100644
+index 849de7ed61..135a9a11fd 100644
 --- a/src/ports/SkTypeface_win_dw.cpp
 +++ b/src/ports/SkTypeface_win_dw.cpp
 @@ -238,15 +238,14 @@ int DWriteFontTypeface::onGetVariationDesignParameters(
@@ -7,7 +7,7 @@ index 849de7ed61..d404f9dee3 100644
      HR_GENERAL(fontResource->GetDefaultFontAxisValues(fontAxisDefaultValue.get(), fontAxisCount),
                 nullptr, -1);
 -    UINT32 coordIndex = 0;
-
+ 
      for (UINT32 axisIndex = 0; axisIndex < fontAxisCount; ++axisIndex) {
          if (fontResource->GetFontAxisAttributes(axisIndex) & DWRITE_FONT_AXIS_ATTRIBUTES_VARIABLE) {
 -            parameters[coordIndex].tag = SkEndian_SwapBE32(fontAxisDefaultValue[axisIndex].axisTag);

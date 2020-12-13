@@ -3,8 +3,9 @@ on:
     branches:
       - master
     paths:
-      - .github/workflows/**
+      - ".github/workflows/**"
       - "*.sh"
+      - "patches/*.patch"
 
 env:
   # version: m88
