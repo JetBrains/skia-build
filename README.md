@@ -1,6 +1,6 @@
 # Automated Skia builds
 
-This repo is dedicated to building Skia binaries for use in [Skija](https://github.com/JetBrains/skija) and [Skiko](https://github.com/JetBrains/skija).
+This repo is dedicated to building Skia binaries for use in [Skija](https://github.com/JetBrains/skija) and [Skiko](https://github.com/JetBrains/skiko).
 
 ## Prebuilt binaries
 
