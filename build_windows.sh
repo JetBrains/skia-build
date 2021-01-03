@@ -48,6 +48,11 @@ if [ "${archive:-false}" = "true" ]; then
     modules/particles/include/*.h \
     modules/skottie/include/*.h \
     modules/skottie/src/*.h \
+    modules/skottie/src/animator/*.h \
+    modules/skottie/src/effects/*.h \
+    modules/skottie/src/layers/*.h \
+    modules/skottie/src/layers/shapelayer/*.h \
+    modules/skottie/src/text/*.h \
     modules/skparagraph/include/*.h \
     modules/skplaintexteditor/include/*.h \
     modules/skresources/include/*.h \
