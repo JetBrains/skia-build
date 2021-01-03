@@ -10,8 +10,8 @@ on:
 env:
   # version: m88
   skia_branch: chrome/m88
-  skia_commit: fc6759b235c51ecc84f239b70549380da290d6e9
-  release: m88-fc6759b235
+  skia_commit: 64fc64c9483f723dde62f077ed6a91585ec26659
+  release: m88-64fc64c948
   archive: true
 
 jobs:

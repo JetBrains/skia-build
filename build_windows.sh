@@ -34,6 +34,7 @@ gn gen out/${build_type}-x64 --args="${args} \
   skia_use_system_icu=false \
   skia_enable_skshaper=true \
   skia_enable_svg=true \
+  skia_enable_skottie=true \
   target_cpu=\"x64\" \
   extra_cflags=[\"-DSK_FONT_HOST_USE_SYSTEM_SETTINGS\"]"
 
@@ -46,6 +47,7 @@ if [ "${archive:-false}" = "true" ]; then
     include \
     modules/particles/include/*.h \
     modules/skottie/include/*.h \
+    modules/skottie/src/*.h \
     modules/skparagraph/include/*.h \
     modules/skplaintexteditor/include/*.h \
     modules/skresources/include/*.h \
