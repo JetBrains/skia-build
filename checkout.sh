@@ -36,14 +36,13 @@ if [ "${checkout:-true}" != "false" ]; then
     echo "> Using $(git rev-parse HEAD)"
   fi
 
+  git reset --hard
+  for patch in ../patches/*.patch; do
+    git apply $patch
+  done
 else
   pushd skia > /dev/null
 fi
-
-git reset --hard
-for patch in ../patches/*.patch; do
-  git apply $patch
-done
 
 if [ -z "${release:-}" ]; then
   release="${version}-$(git rev-parse --short HEAD)"

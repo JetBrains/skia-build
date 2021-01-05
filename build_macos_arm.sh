@@ -18,7 +18,7 @@ else
   args="is_debug=false is_official_build=true"
 fi
 
-gn gen out/${build_type}-arm64 --args="${args} \
+./bin/gn gen out/${build_type}-arm64 --args="${args} \
   skia_use_system_expat=false \
   skia_use_system_libjpeg_turbo=false \
   skia_use_system_libpng=false \
