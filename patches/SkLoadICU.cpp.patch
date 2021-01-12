@@ -1,5 +1,5 @@
 diff --git a/third_party/icu/SkLoadICU.cpp b/third_party/icu/SkLoadICU.cpp
-index 5b3b153336..2142da01b9 100644
+index 5b3b153336..8696aaf927 100644
 --- a/third_party/icu/SkLoadICU.cpp
 +++ b/third_party/icu/SkLoadICU.cpp
 @@ -15,39 +15,37 @@
@@ -71,9 +71,9 @@ index 5b3b153336..2142da01b9 100644
      std::call_once(flag, []() {
 -        good = load_from(executable_directory()) || load_from(library_directory());
 +        std::ostringstream buffer;
-+        void* addr = win_mmap(executable_directory() + "\\icudtl.dat", buffer);
++        void* addr = win_mmap(library_directory() + "\\icudtl.dat", buffer);
 +        if (addr == nullptr)
-+            addr = win_mmap(library_directory() + "\\icudtl.dat", buffer);
++            addr = win_mmap(executable_directory() + "\\icudtl.dat", buffer);
 +        if (addr == nullptr)
 +            fputs(buffer.str().c_str(), stderr);
 +        if (addr)
