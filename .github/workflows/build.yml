@@ -8,10 +8,10 @@ on:
       - "patches/*.patch"
 
 env:
-  # version: m88
-  skia_branch: chrome/m88
-  skia_commit: 21ebdec5170d890bb7fc7ec88d3dc0ee9995e600
-  release: m88-21ebdec517
+  # version: m89
+  skia_branch: chrome/m89
+  skia_commit: 15595ea39c4442ded546ba36ef63a521240bc0f4
+  release: m89-15595ea39c
   archive: true
 
 jobs:
