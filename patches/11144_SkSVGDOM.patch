@@ -1,0 +1,15 @@
+diff --git a/modules/svg/src/SkSVGDOM.cpp b/modules/svg/src/SkSVGDOM.cpp
+index 5f16e3ee43..2ec63ec8ca 100644
+--- a/modules/svg/src/SkSVGDOM.cpp
++++ b/modules/svg/src/SkSVGDOM.cpp
+@@ -473,6 +473,10 @@ const SkSize& SkSVGDOM::containerSize() const {
+ void SkSVGDOM::setContainerSize(const SkSize& containerSize) {
+     // TODO: inval
+     fContainerSize = containerSize;
++    if (fRoot) {
++        fRoot->setWidth(SkSVGLength(containerSize.fWidth));
++        fRoot->setHeight(SkSVGLength(containerSize.fHeight));
++    }
+ }
+ 
+ sk_sp<SkSVGNode>* SkSVGDOM::findNodeById(const char* id) {

@@ -1,0 +1,13 @@
+diff --git a/modules/svg/src/SkSVGRenderContext.cpp b/modules/svg/src/SkSVGRenderContext.cpp
+index 1275804821..64e4bb987a 100644
+--- a/modules/svg/src/SkSVGRenderContext.cpp
++++ b/modules/svg/src/SkSVGRenderContext.cpp
+@@ -26,7 +26,7 @@ SkScalar length_size_for_type(const SkSize& viewport, SkSVGLengthContext::Length
+     case SkSVGLengthContext::LengthType::kVertical:
+         return viewport.height();
+     case SkSVGLengthContext::LengthType::kOther:
+-        return SkScalarSqrt(viewport.width() * viewport.height());
++        return SkScalarSqrt(viewport.width() * viewport.width() / 2.0 + viewport.height() * viewport.height() / 2.0);
+     }
+ 
+     SkASSERT(false);  // Not reached.
