@@ -12,38 +12,22 @@ Update `skia_branch`, `skia_commit` and `release` in [.github/workflows/build.ym
 
 ## Building locally
 
-This script will:
-
-- check out `depot_tools`,
-- check out `skia` (latest commit from `chrome/$version` branch),
-- update submodules,
-- build shared library with `skshaper` and `skparagraph` modules,
-- produce redistributable zip.
-
 ```sh
-version=m88 ./build_macos.sh
+python3 script/checkout.py --version=m89
+python3 script/build.py
+python3 script/archive.py
 ```
 
-If you want to specify exact commit to build:
+More options can be specified for checkout:
 
 ```sh
-skia_branch=chrome/m88 skia_commit=fc6759b235c51ecc84f239b70549380da290d6e9 release=m88-fc6759b235 ./build_macos.sh
+python3 script/checkout.py [--version VERSION] [--skia-branch SKIA_BRANCH] [--skia-commit SKIA_COMMIT]
 ```
 
-To build debug version:
+To build a debug build:
 
 ```sh
-build_type=Debug version=m88 ./build_macos.sh
-```
-
-To build a zip archive at the end:
-
-```sh
-archive=true version=m88 ./build_macos.sh
-```
-
-To skip checkout (e.g. for builds with local changes):
-
-```sh
-checkout=false version=m88 ./build_macos.sh
+python3 script/checkout.py --version=m89
+python3 script/build.py --debug
+python3 script/archive.py --debug
 ```

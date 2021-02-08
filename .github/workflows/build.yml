@@ -3,91 +3,76 @@ on:
     branches:
       - master
     paths:
-      - ".github/workflows/**"
-      - "*.sh"
-      - "patches/*.patch"
+      - ".github/workflows/*"
+      - "script/*"
+      - "patches/*"
 
 env:
-  # version: m89
   skia_branch: chrome/m89
-  skia_commit: 15595ea39c4442ded546ba36ef63a521240bc0f4
-  release: m89-15595ea39c
-  archive: true
+  skia_commit: ed1b25f0aa5c1df9d1a4a7b6a001634bdddde7cf
+  release: m89-ed1b25f0aa
 
 jobs:
 
   macos:
     runs-on: macos-10.15
-    strategy:
-      matrix:
-        build_type: [Release, Debug]
-      fail-fast: false
-    env:
-      platform: macos
-      build_type: ${{ matrix.build_type }}
     steps:
       - uses: actions/checkout@v2
-      - run: ./check_release.sh
+      - run: python3 script/check_release.py --release ${{ env.release }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      - run: ./build_macos.sh
+      - run: python3 script/checkout.py --skia-branch ${{ env.skia_branch }} --skia-commit ${{ env.skia_commit }}
+      - run: python3 script/build.py
+      - run: python3 script/archive.py
       - uses: actions/upload-artifact@v2
         with:
-          name: Skia-${{ env.release }}-macos-${{ matrix.build_type }}-x64.zip
+          name: Skia-${{ env.release }}-macos-Release-x64.zip
           path: '*.zip'
-      - run: ./release.sh
+      - run: python3 script/release.py
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
   linux:
     runs-on: ubuntu-latest
     container: ubuntu:14.04
-    strategy:
-      matrix:
-        build_type: [Release, Debug]
-      fail-fast: false
-    env:
-      platform: linux
-      build_type: ${{ matrix.build_type }}
     steps:
       - uses: actions/checkout@v2
-      - run: sudo ./prepare_linux.sh
-      - run: ./check_release.sh
+      - run: sudo ./script/prepare_linux.sh
+      - run: python3 script/check_release.py --release ${{ env.release }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      - run: PATH=/usr/lib/binutils-2.26/bin:$PATH ./build_linux.sh
+      - run: PATH=/usr/lib/binutils-2.26/bin:$PATH python3 script/checkout.py --skia-branch ${{ env.skia_branch }} --skia-commit ${{ env.skia_commit }}
+      - run: PATH=/usr/lib/binutils-2.26/bin:$PATH python3 script/build.py
+      - run: PATH=/usr/lib/binutils-2.26/bin:$PATH python3 script/archive.py
       - uses: actions/upload-artifact@v2
         with:
-          name: Skia-${{ env.release }}-linux-${{ matrix.build_type }}-x64.zip
+          name: Skia-${{ env.release }}-linux-Release-x64.zip
           path: '*.zip'
-      - run: ./release.sh
+      - run: python3 script/release.py
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
   windows:
     runs-on: windows-2019
-    strategy:
-      matrix:
-        build_type: [Release, Debug]
-      fail-fast: false
-    env:
-      platform: windows
-      build_type: ${{ matrix.build_type }}
     steps:
       - uses: actions/checkout@v2
       - shell: bash
-        run: ./check_release.sh
+        run: python3 script/check_release.py --release ${{ env.release }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - uses: microsoft/setup-msbuild@v1
       - uses: ilammy/msvc-dev-cmd@v1
       - shell: bash
-        run: ./build_windows.sh
+        run: python3 script/checkout.py --skia-branch ${{ env.skia_branch }} --skia-commit ${{ env.skia_commit }}
+      - shell: bash
+        run: python3 script/build.py
+      - shell: bash
+        run: python3 script/archive.py
       - uses: actions/upload-artifact@v2
         with:
-          name: Skia-${{ env.release }}-windows-${{ matrix.build_type }}-x64.zip
+          name: Skia-${{ env.release }}-windows-Release-x64.zip
           path: '*.zip'
       - shell: bash
-        run: ./release.sh
+        run: python3 script/release.py
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
