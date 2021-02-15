@@ -18,6 +18,8 @@ def main():
 
   globs = [
     'out/' + build_type + '-' + common.machine + '/*.a',
+    'out/' + build_type + '-' + common.machine + '/*.lib',
+    'out/' + build_type + '-' + common.machine + '/icudtl.dat',
     'include/**/*',
     'modules/particles/include/*.h',
     'modules/skottie/include/*.h',
@@ -67,7 +69,6 @@ def main():
   with zipfile.ZipFile(os.path.join(os.pardir, target), 'w', compression=zipfile.ZIP_DEFLATED) as zip:
     dirs = set()
     for glob in globs:
-      glob = os.path.join(*glob.split("/"))
       for path in pathlib.Path().glob(glob):
         if not path.is_dir():
           for dir in parents(path):
