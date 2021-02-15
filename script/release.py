@@ -4,11 +4,11 @@ import common, json, os, re, sys, urllib.request
 
 def main():
   os.chdir(os.path.join(os.path.dirname(__file__), os.pardir, 'skia'))
-  release = common.release()
+  version = common.version()
   build_type = common.build_type()
   os.chdir(os.pardir)
 
-  zip = 'Skia-' + release + '-' + common.system + '-' + build_type + '-' + common.machine + '.zip'
+  zip = 'Skia-' + version + '-' + common.system + '-' + build_type + '-' + common.machine + '.zip'
   if not os.path.exists(zip):
     print('Can\'t find "' + zip + '"')
     return 1
@@ -16,9 +16,9 @@ def main():
   headers = common.github_headers()
 
   try:
-    resp = urllib.request.urlopen(urllib.request.Request('https://api.github.com/repos/JetBrains/skia-build/releases/tags/' + release, headers=headers)).read()
+    resp = urllib.request.urlopen(urllib.request.Request('https://api.github.com/repos/JetBrains/skia-build/releases/tags/' + version, headers=headers)).read()
   except urllib.error.URLError as e:
-    data = '{"tag_name":"' + release + '","name":"' + release + '"}'
+    data = '{"tag_name":"' + version + '","name":"' + version + '"}'
     resp = urllib.request.urlopen(urllib.request.Request('https://api.github.com/repos/JetBrains/skia-build/releases', data=data.encode('utf-8'), headers=headers)).read()
   upload_url = re.match('https://.*/assets', json.loads(resp.decode('utf-8'))['upload_url']).group(0)
 

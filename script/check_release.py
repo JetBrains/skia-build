@@ -4,13 +4,13 @@ import common, json, sys, urllib.request
 
 def main():
   headers = common.github_headers()
-  release = common.release()
+  version = common.version()
   build_type = common.build_type()
-
+  
   try:
-    resp = urllib.request.urlopen(urllib.request.Request('https://api.github.com/repos/JetBrains/skia-build/releases/tags/' + release, headers=headers)).read()
+    resp = urllib.request.urlopen(urllib.request.Request('https://api.github.com/repos/JetBrains/skia-build/releases/tags/' + version, headers=headers)).read()
     artifacts = [x['name'] for x in json.loads(resp.decode('utf-8'))['assets']]
-    zip = 'Skia-' + release + '-' + common.system + '-' + build_type + '-' + common.machine + '.zip'
+    zip = 'Skia-' + version + '-' + common.system + '-' + build_type + '-' + common.machine + '.zip'
     if zip in artifacts:
       print('> Artifact "' + zip + '" exists, stopping')
       return 1

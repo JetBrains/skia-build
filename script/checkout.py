@@ -1,14 +1,12 @@
 #! /usr/bin/env python3
 
-import argparse, common, os, pathlib, platform, subprocess, sys
+import argparse, common, os, pathlib, platform, re, subprocess, sys
 
 def main():
   os.chdir(os.path.join(os.path.dirname(__file__), os.pardir))
   
   parser = argparse.ArgumentParser()
-  parser.add_argument('--version', default='m89')
-  parser.add_argument('--skia-branch')
-  parser.add_argument('--skia-commit')
+  parser.add_argument('--version', required=True)
   args = parser.parse_args()
 
   # Clone depot_tools
@@ -16,31 +14,31 @@ def main():
     subprocess.check_call(["git", "clone", "https://chromium.googlesource.com/chromium/tools/depot_tools.git", "depot_tools"])
 
   # Clone Skia
-  skia_branch = args.skia_branch or ("chrome/" + args.version)
+  match = re.match('(m\\d+)(?:-([0-9a-f]+))?', args.version)
+  if not match:
+    raise Exception('Expected --version "m<ver>-<sha>", got "' + args.version + '"')
+  branch = "chrome/" + match.group(1)
+  commit = match.group(2)
+
   if os.path.exists("skia"):
     os.chdir("skia")
-    if subprocess.check_output(["git", "branch", "--list", skia_branch]):
-      print("> Advancing", skia_branch)
-      subprocess.check_call(["git", "checkout", "-B", skia_branch])
+    if subprocess.check_output(["git", "branch", "--list", branch]):
+      print("> Advancing", branch)
+      subprocess.check_call(["git", "checkout", "-B", branch])
       subprocess.check_call(["git", "fetch"])
-      subprocess.check_call(["git", "reset", "--hard", "origin/" + skia_branch])
+      subprocess.check_call(["git", "reset", "--hard", "origin/" + branch])
     else:
-      print("> Fetching", skia_branch)
-      subprocess.check_call(["git", "fetch", "origin", skia_branch + ":remotes/origin/" + skia_branch])
-      subprocess.check_call(["git", "reset", "--hard"])
-      subprocess.check_call(["git", "checkout", skia_branch])
+      print("> Fetching", branch)
+      subprocess.check_call(["git", "fetch", "origin", branch + ":remotes/origin/" + branch])
+      subprocess.check_call(["git", "checkout", branch])
   else:
-    print("> Cloning", skia_branch)
-    subprocess.check_call(["git", "clone", "https://skia.googlesource.com/skia", "--quiet", "--branch", skia_branch, "skia"])
+    print("> Cloning", branch)
+    subprocess.check_call(["git", "clone", "https://skia.googlesource.com/skia", "--quiet", "--branch", branch, "skia"])
     os.chdir("skia")
 
   # Checkout commit
-  if args.skia_commit:
-    print("> Checking out", args.skia_commit)
-    subprocess.check_call(["git", "-c", "advice.detachedHead=false", "checkout", args.skia_commit])
-  else:
-    commit = subprocess.check_output(["git", "rev-parse", "HEAD"]).decode('utf-8')
-    print("> Using", commit)
+  print("> Checking out", commit)
+  subprocess.check_call(["git", "-c", "advice.detachedHead=false", "checkout", commit])
 
   # Apply patches
   subprocess.check_call(["git", "reset", "--hard"])
@@ -52,7 +50,7 @@ def main():
   if 'windows' == common.system:
     env = os.environ.copy()
     env['PYTHONHTTPSVERIFY']='0'
-    subprocess.run(["python", "tools/git-sync-deps"], check=True, env=env)
+    subprocess.check_call(["python", "tools/git-sync-deps"], env=env)
   else:
     subprocess.check_call(["python2", "tools/git-sync-deps"])
 

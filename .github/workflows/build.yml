@@ -8,9 +8,7 @@ on:
       - "patches/*"
 
 env:
-  skia_branch: chrome/m89
-  skia_commit: ed1b25f0aa5c1df9d1a4a7b6a001634bdddde7cf
-  release: m89-ed1b25f0aa
+  version: m89-19889d74fa
 
 jobs:
 
@@ -18,15 +16,15 @@ jobs:
     runs-on: macos-10.15
     steps:
       - uses: actions/checkout@v2
-      - run: python3 script/check_release.py --release ${{ env.release }}
+      - run: python3 script/check_release.py --version ${{ env.version }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      - run: python3 script/checkout.py --skia-branch ${{ env.skia_branch }} --skia-commit ${{ env.skia_commit }}
+      - run: python3 script/checkout.py --version ${{ env.version }}
       - run: python3 script/build.py
       - run: python3 script/archive.py
       - uses: actions/upload-artifact@v2
         with:
-          name: Skia-${{ env.release }}-macos-Release-x64.zip
+          name: Skia-${{ env.version }}-macos-Release-x64.zip
           path: '*.zip'
       - run: python3 script/release.py
         env:
@@ -38,15 +36,15 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - run: sudo ./script/prepare_linux.sh
-      - run: python3 script/check_release.py --release ${{ env.release }}
+      - run: python3 script/check_release.py --version ${{ env.version }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      - run: PATH=/usr/lib/binutils-2.26/bin:$PATH python3 script/checkout.py --skia-branch ${{ env.skia_branch }} --skia-commit ${{ env.skia_commit }}
+      - run: PATH=/usr/lib/binutils-2.26/bin:$PATH python3 script/checkout.py --version ${{ env.version }}
       - run: PATH=/usr/lib/binutils-2.26/bin:$PATH python3 script/build.py
       - run: PATH=/usr/lib/binutils-2.26/bin:$PATH python3 script/archive.py
       - uses: actions/upload-artifact@v2
         with:
-          name: Skia-${{ env.release }}-linux-Release-x64.zip
+          name: Skia-${{ env.version }}-linux-Release-x64.zip
           path: '*.zip'
       - run: python3 script/release.py
         env:
@@ -57,20 +55,20 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - shell: bash
-        run: python3 script/check_release.py --release ${{ env.release }}
+        run: python3 script/check_release.py --version ${{ env.version }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - uses: microsoft/setup-msbuild@v1
       - uses: ilammy/msvc-dev-cmd@v1
       - shell: bash
-        run: python3 script/checkout.py --skia-branch ${{ env.skia_branch }} --skia-commit ${{ env.skia_commit }}
+        run: python3 script/checkout.py --version ${{ env.version }}
       - shell: bash
         run: python3 script/build.py
       - shell: bash
         run: python3 script/archive.py
       - uses: actions/upload-artifact@v2
         with:
-          name: Skia-${{ env.release }}-windows-Release-x64.zip
+          name: Skia-${{ env.version }}-windows-Release-x64.zip
           path: '*.zip'
       - shell: bash
         run: python3 script/release.py

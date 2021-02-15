@@ -13,7 +13,7 @@ Update `skia_branch`, `skia_commit` and `release` in [.github/workflows/build.ym
 ## Building locally
 
 ```sh
-python3 script/checkout.py --version=m89
+python3 script/checkout.py --version m89-19889d74fa
 python3 script/build.py
 python3 script/archive.py
 ```
@@ -21,13 +21,13 @@ python3 script/archive.py
 More options can be specified for checkout:
 
 ```sh
-python3 script/checkout.py [--version VERSION] [--skia-branch SKIA_BRANCH] [--skia-commit SKIA_COMMIT]
+python3 script/checkout.py [--version VERSION]
 ```
 
 To build a debug build:
 
 ```sh
-python3 script/checkout.py --version=m89
+python3 script/checkout.py --version m89-19889d74fa
 python3 script/build.py --debug
 python3 script/archive.py --debug
 ```

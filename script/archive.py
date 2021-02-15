@@ -14,7 +14,7 @@ def main():
   os.chdir(os.path.join(os.path.dirname(__file__), os.pardir, 'skia'))
   
   build_type = common.build_type()
-  release = common.release()
+  version = common.version()
 
   globs = [
     'out/' + build_type + '-' + common.machine + '/*.a',
@@ -61,12 +61,13 @@ def main():
     'third_party/externals/zlib/*.h',
   ]
 
-  target = 'Skia-' + release + '-' + common.system + '-' + build_type + '-' + common.machine + '.zip'
+  target = 'Skia-' + version + '-' + common.system + '-' + build_type + '-' + common.machine + '.zip'
   print('> Writing', target)
   
-  with zipfile.ZipFile(os.path.join(os.pardir, target), 'w') as zip:
+  with zipfile.ZipFile(os.path.join(os.pardir, target), 'w', compression=zipfile.ZIP_DEFLATED, compresslevel=9) as zip:
     dirs = set()
     for glob in globs:
+      glob = os.path.join(*glob.split("/"))
       for path in pathlib.Path().glob(glob):
         if not path.is_dir():
           for dir in parents(path):

@@ -5,38 +5,25 @@ import argparse, base64, os, platform, re, subprocess
 system = {'Darwin': 'macos', 'Linux': 'linux', 'Windows': 'windows'}[platform.system()]
 machine = {'AMD64': 'x64', 'x86_64': 'x64', 'arm64': 'arm64'}[platform.machine()]
 
-def release():
+def version():
   parser = argparse.ArgumentParser()
   parser.add_argument('--debug', action='store_true')
-  parser.add_argument('--release')
-  parser.add_argument('--version', default='m89')
-  parser.add_argument('--skia-branch')
-  parser.add_argument('--skia-commit')
+  parser.add_argument('--version')
   args = parser.parse_args()
   
-  if args.release:
-    return args.release
+  if args.version:
+    return args.version
 
-  if args.skia_branch:
-    version = re.match("chrome/(m\\d+)", args.skia_branch).group(1)
-  elif args.version:
-    version = args.version
-  else:
-    branches = subprocess.check_output(['git', 'branch', '--contains', 'HEAD']).decode('utf-8')
-    for match in re.finditer('chrome/(m\\d+)', branches):
-      version = match.group(1)
-
-  if args.skia_commit:
-    revision = args.skia_commit
-  else:
-    revision = subprocess.check_output(['git', 'rev-parse', 'HEAD']).decode('utf-8')
-
-  build_type = 'Debug' if args.debug else 'Release'
+  branches = subprocess.check_output(['git', 'branch', '--contains', 'HEAD']).decode('utf-8')
+  for match in re.finditer('chrome/(m\\d+)', branches):
+    version = match.group(1)
+  revision = subprocess.check_output(['git', 'rev-parse', 'HEAD']).decode('utf-8')
   return version + '-' + revision.strip()[:10]
 
 def build_type():
   parser = argparse.ArgumentParser()
   parser.add_argument('--debug', action='store_true')
+  parser.add_argument('--version')
   (args, _) = parser.parse_known_args()
   return 'Debug' if args.debug else 'Release'
   
