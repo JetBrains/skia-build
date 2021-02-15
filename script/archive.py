@@ -64,7 +64,7 @@ def main():
   target = 'Skia-' + version + '-' + common.system + '-' + build_type + '-' + common.machine + '.zip'
   print('> Writing', target)
   
-  with zipfile.ZipFile(os.path.join(os.pardir, target), 'w', compression=zipfile.ZIP_DEFLATED, compresslevel=9) as zip:
+  with zipfile.ZipFile(os.path.join(os.pardir, target), 'w', compression=zipfile.ZIP_DEFLATED) as zip:
     dirs = set()
     for glob in globs:
       glob = os.path.join(*glob.split("/"))
