@@ -6,6 +6,7 @@ on:
       - ".github/workflows/*"
       - "script/*"
       - "patches/*"
+  workflow_dispatch:
 
 env:
   version: m89-19889d74fa
