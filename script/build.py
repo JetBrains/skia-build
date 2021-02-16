@@ -53,7 +53,7 @@ def main():
   elif 'windows' == common.system:
     args += [
       # 'skia_use_angle=true',
-      # 'skia_use_direct3d=true',
+      'skia_use_direct3d=true',
       'extra_cflags=["-DSK_FONT_HOST_USE_SYSTEM_SETTINGS"]',
     ]
 
