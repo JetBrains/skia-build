@@ -45,6 +45,7 @@ def main():
     'third_party/externals/freetype/docs/GPLv2.TXT',
     'third_party/externals/freetype/docs/LICENSE.TXT',
     'third_party/externals/freetype/include/**/*',
+    'third_party/externals/icu/source/common/**/*.h',
     'third_party/externals/libpng/LICENSE',
     'third_party/externals/libpng/*.h',
     'third_party/externals/libwebp/COPYING',
@@ -61,6 +62,7 @@ def main():
     'third_party/externals/swiftshader/include/**/*',
     'third_party/externals/zlib/LICENSE',
     'third_party/externals/zlib/*.h',
+    "third_party/icu/*.h"
   ]
 
   target = 'Skia-' + version + '-' + common.system + '-' + build_type + '-' + common.machine + '.zip'
