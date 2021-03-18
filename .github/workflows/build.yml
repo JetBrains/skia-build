@@ -9,7 +9,7 @@ on:
   workflow_dispatch:
 
 env:
-  version: m89-109bfc9052
+  version: m90-adbb69cd7f
 
 jobs:
 
@@ -32,8 +32,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
   linux:
-    runs-on: ubuntu-latest
-    container: ubuntu:14.04
+    runs-on: ubuntu-16.04
     steps:
       - uses: actions/checkout@v2
       - run: sudo ./script/prepare_linux.sh
@@ -48,6 +47,26 @@ jobs:
           name: Skia-${{ env.version }}-linux-Release-x64.zip
           path: '*.zip'
       - run: python3 script/release.py
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  linux-gcc4:
+    runs-on: ubuntu-latest
+    container: ubuntu:14.04
+    steps:
+      - uses: actions/checkout@v2
+      - run: sudo ./script/prepare_linux.sh
+      - run: python3 script/check_release.py --version ${{ env.version }} --classifier gcc4
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - run: PATH=/usr/lib/binutils-2.26/bin:$PATH python3 script/checkout.py --version ${{ env.version }}
+      - run: PATH=/usr/lib/binutils-2.26/bin:$PATH python3 script/build.py
+      - run: PATH=/usr/lib/binutils-2.26/bin:$PATH python3 script/archive.py --classifier gcc4
+      - uses: actions/upload-artifact@v2
+        with:
+          name: Skia-${{ env.version }}-linux-Release-x64-gcc4.zip
+          path: '*.zip'
+      - run: python3 script/release.py --classifier gcc4
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 

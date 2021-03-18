@@ -8,7 +8,7 @@ def main():
   build_type = common.build_type()
   os.chdir(os.pardir)
 
-  zip = 'Skia-' + version + '-' + common.system + '-' + build_type + '-' + common.machine + '.zip'
+  zip = 'Skia-' + version + '-' + common.system + '-' + build_type + '-' + common.machine + common.classifier() + '.zip'
   if not os.path.exists(zip):
     print('Can\'t find "' + zip + '"')
     return 1

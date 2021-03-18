@@ -10,7 +10,7 @@ def main():
   try:
     resp = urllib.request.urlopen(urllib.request.Request('https://api.github.com/repos/JetBrains/skia-build/releases/tags/' + version, headers=headers)).read()
     artifacts = [x['name'] for x in json.loads(resp.decode('utf-8'))['assets']]
-    zip = 'Skia-' + version + '-' + common.system + '-' + build_type + '-' + common.machine + '.zip'
+    zip = 'Skia-' + version + '-' + common.system + '-' + build_type + '-' + common.machine + common.classifier() + '.zip'
     if zip in artifacts:
       print('> Artifact "' + zip + '" exists, stopping')
       return 1

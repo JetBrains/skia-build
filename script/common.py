@@ -9,6 +9,7 @@ def version():
   parser = argparse.ArgumentParser()
   parser.add_argument('--debug', action='store_true')
   parser.add_argument('--version')
+  parser.add_argument('--classifier')
   args = parser.parse_args()
   
   if args.version:
@@ -24,8 +25,17 @@ def build_type():
   parser = argparse.ArgumentParser()
   parser.add_argument('--debug', action='store_true')
   parser.add_argument('--version')
+  parser.add_argument('--classifier')
   (args, _) = parser.parse_known_args()
   return 'Debug' if args.debug else 'Release'
+
+def classifier():
+  parser = argparse.ArgumentParser()
+  parser.add_argument('--debug', action='store_true')
+  parser.add_argument('--version')
+  parser.add_argument('--classifier')
+  (args, _) = parser.parse_known_args()
+  return '-' + args.classifier if args.classifier else ''
   
 def github_headers():
   if os.environ.get('GITHUB_BASIC'):
