@@ -5,8 +5,7 @@ import argparse, common, os, pathlib, platform, re, subprocess, sys
 def main():
   os.chdir(os.path.join(os.path.dirname(__file__), os.pardir))
   
-  parser = argparse.ArgumentParser()
-  parser.add_argument('--version', required=True)
+  parser = common.create_parser(True)
   args = parser.parse_args()
 
   # Clone depot_tools
@@ -49,7 +48,7 @@ def main():
     subprocess.check_call(["git", "apply", str(x)])
 
   # git deps
-  if 'windows' == common.system:
+  if 'windows' == common.system():
     env = os.environ.copy()
     env['PYTHONHTTPSVERIFY']='0'
     subprocess.check_call(["python", "tools/git-sync-deps"], env=env)

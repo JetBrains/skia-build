@@ -15,11 +15,14 @@ def main():
   
   build_type = common.build_type()
   version = common.version()
+  machine = common.machine()
+  system = common.system()
+  classifier = common.classifier()
 
   globs = [
-    'out/' + build_type + '-' + common.machine + '/*.a',
-    'out/' + build_type + '-' + common.machine + '/*.lib',
-    'out/' + build_type + '-' + common.machine + '/icudtl.dat',
+    'out/' + build_type + '-' + machine + '/*.a',
+    'out/' + build_type + '-' + machine + '/*.lib',
+    'out/' + build_type + '-' + machine + '/icudtl.dat',
     'include/**/*',
     'modules/particles/include/*.h',
     'modules/skottie/include/*.h',
@@ -65,7 +68,7 @@ def main():
     "third_party/icu/*.h"
   ]
 
-  target = 'Skia-' + version + '-' + common.system + '-' + build_type + '-' + common.machine + common.classifier() + '.zip'
+  target = 'Skia-' + version + '-' + system + '-' + build_type + '-' + machine + classifier + '.zip'
   print('> Writing', target)
   
   with zipfile.ZipFile(os.path.join(os.pardir, target), 'w', compression=zipfile.ZIP_DEFLATED) as zip:

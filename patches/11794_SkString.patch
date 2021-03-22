@@ -2,13 +2,11 @@ diff --git a/src/core/SkString.cpp b/src/core/SkString.cpp
 index bf0078bf32..f30f3fd4d6 100644
 --- a/src/core/SkString.cpp
 +++ b/src/core/SkString.cpp
-@@ -151,6 +151,21 @@ char* SkStrAppendS64(char string[], int64_t dec, int minDigits) {
+@@ -151,6 +151,19 @@ char* SkStrAppendS64(char string[], int64_t dec, int minDigits) {
      return SkStrAppendU64(string, udec, minDigits);
  }
  
-+#if !defined(SK_BUILD_FOR_ANDROID)
 +#include <locale.h>
-+#endif
 +
 +#if defined(SK_BUILD_FOR_MAC) || defined(SK_BUILD_FOR_IOS)
 +#include <xlocale.h>

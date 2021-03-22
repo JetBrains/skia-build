@@ -2,13 +2,11 @@ diff --git a/src/utils/SkParse.cpp b/src/utils/SkParse.cpp
 index 4cbdaa5822..a71e7299a9 100644
 --- a/src/utils/SkParse.cpp
 +++ b/src/utils/SkParse.cpp
-@@ -199,12 +199,28 @@ const char* SkParse::FindMSec(const char str[], SkMSec* value)
+@@ -199,12 +199,26 @@ const char* SkParse::FindMSec(const char str[], SkMSec* value)
      return str;
  }
  
-+#if !defined(SK_BUILD_FOR_ANDROID)
 +#include <locale.h>
-+#endif
 +
 +#if defined(SK_BUILD_FOR_MAC) || defined(SK_BUILD_FOR_IOS)
 +#include <xlocale.h>
