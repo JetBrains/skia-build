@@ -71,6 +71,32 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
+  android:
+    runs-on: ubuntu-16.04
+    strategy:
+      matrix:
+        machine: [arm, arm64]
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-java@v1
+        with:
+          java-version: 1.8
+      - run: ls -l /usr/local/lib/android/sdk/ndk-bundle
+      - run: sudo ./script/prepare_linux.sh
+      - run: python3 script/check_release.py --version ${{ env.version }} --system android --machine ${{ matrix.machine }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - run: PATH=/usr/lib/binutils-2.26/bin:$PATH python3 script/checkout.py --version ${{ env.version }} --system android --machine ${{ matrix.machine }}
+      - run: PATH=/usr/lib/binutils-2.26/bin:$PATH python3 script/build.py --system android --machine ${{ matrix.machine }} --ndk "/usr/local/lib/android/sdk/ndk-bundle"
+      - run: PATH=/usr/lib/binutils-2.26/bin:$PATH python3 script/archive.py --system android --machine ${{ matrix.machine }}
+      - uses: actions/upload-artifact@v2
+        with:
+          name: Skia-${{ env.version }}-android-Release-${{ matrix.machine }}.zip
+          path: '*.zip'
+      - run: python3 script/release.py --system android --machine ${{ matrix.machine }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
   windows:
     runs-on: windows-2019
     steps:

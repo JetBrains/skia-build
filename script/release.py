@@ -6,9 +6,12 @@ def main():
   os.chdir(os.path.join(os.path.dirname(__file__), os.pardir, 'skia'))
   version = common.version()
   build_type = common.build_type()
+  machine = common.machine()
+  system = common.system()
+  classifier = common.classifier()
   os.chdir(os.pardir)
 
-  zip = 'Skia-' + version + '-' + common.system + '-' + build_type + '-' + common.machine + common.classifier() + '.zip'
+  zip = 'Skia-' + version + '-' + system + '-' + build_type + '-' + machine + classifier + '.zip'
   if not os.path.exists(zip):
     print('Can\'t find "' + zip + '"')
     return 1

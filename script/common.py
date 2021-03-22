@@ -2,14 +2,28 @@
 
 import argparse, base64, os, platform, re, subprocess
 
-system = {'Darwin': 'macos', 'Linux': 'linux', 'Windows': 'windows'}[platform.system()]
-machine = {'AMD64': 'x64', 'x86_64': 'x64', 'arm64': 'arm64'}[platform.machine()]
-
-def version():
+def create_parser(version_required=False):
   parser = argparse.ArgumentParser()
   parser.add_argument('--debug', action='store_true')
-  parser.add_argument('--version')
+  parser.add_argument('--version', required=version_required)
   parser.add_argument('--classifier')
+  parser.add_argument('--system')
+  parser.add_argument('--machine')
+  parser.add_argument('--ndk')
+  return parser
+
+def system():
+  parser = create_parser()
+  (args, _) = parser.parse_known_args()
+  return args.system if args.system else {'Darwin': 'macos', 'Linux': 'linux', 'Windows': 'windows'}[platform.system()]
+
+def machine():
+  parser = create_parser()
+  (args, _) = parser.parse_known_args()
+  return args.machine if args.machine else {'AMD64': 'x64', 'x86_64': 'x64', 'arm64': 'arm64'}[platform.machine()]
+
+def version():
+  parser = create_parser()
   args = parser.parse_args()
   
   if args.version:
@@ -22,18 +36,12 @@ def version():
   return version + '-' + revision.strip()[:10]
 
 def build_type():
-  parser = argparse.ArgumentParser()
-  parser.add_argument('--debug', action='store_true')
-  parser.add_argument('--version')
-  parser.add_argument('--classifier')
+  parser = create_parser()
   (args, _) = parser.parse_known_args()
   return 'Debug' if args.debug else 'Release'
 
 def classifier():
-  parser = argparse.ArgumentParser()
-  parser.add_argument('--debug', action='store_true')
-  parser.add_argument('--version')
-  parser.add_argument('--classifier')
+  parser = create_parser()
   (args, _) = parser.parse_known_args()
   return '-' + args.classifier if args.classifier else ''
   
@@ -46,3 +54,9 @@ def github_headers():
     'Accept': 'application/vnd.github.v3+json',
     'Authorization': auth
   }
+
+def ndk():
+  parser = create_parser()
+  (args, _) = parser.parse_known_args()
+  return args.ndk if args.ndk else ''
+
