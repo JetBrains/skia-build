@@ -7,15 +7,14 @@ on:
       - "script/*"
       - "patches/*"
   workflow_dispatch:
+    inputs:
+      skip_release:
+        description: 'Skip release related steps? (true/false)'
+        required: true
+        default: 'false'
 
 env:
   version: m90-adbb69cd7f
-
-inputs:
-  skip_release:
-    description: 'Skip release related steps? (true/false)'
-    required: true
-    default: 'false'
 
 jobs:
 
@@ -24,7 +23,7 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - run: python3 script/check_release.py --version ${{ env.version }}
-        if: ${{ INPUT_SKIP_RELEASE != 'false' }}
+        if: ${{ github.event.inputs.skip_release != 'true' }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - run: python3 script/checkout.py --version ${{ env.version }}
@@ -35,7 +34,7 @@ jobs:
           name: Skia-${{ env.version }}-macos-Release-x64.zip
           path: '*.zip'
       - run: python3 script/release.py
-        if: ${{ INPUT_SKIP_RELEASE != 'false' }}
+        if: ${{ github.event.inputs.skip_release != 'true' }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
@@ -45,7 +44,7 @@ jobs:
       - uses: actions/checkout@v2
       - run: sudo ./script/prepare_linux.sh
       - run: python3 script/check_release.py --version ${{ env.version }}
-        if: ${{ INPUT_SKIP_RELEASE != 'false' }}
+        if: ${{ github.event.inputs.skip_release != 'true' }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - run: PATH=/usr/lib/binutils-2.26/bin:$PATH python3 script/checkout.py --version ${{ env.version }}
@@ -56,7 +55,7 @@ jobs:
           name: Skia-${{ env.version }}-linux-Release-x64.zip
           path: '*.zip'
       - run: python3 script/release.py
-        if: ${{ INPUT_SKIP_RELEASE != 'false' }}
+        if: ${{ github.event.inputs.skip_release != 'true' }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
@@ -68,7 +67,7 @@ jobs:
       - run: sudo ./script/prepare_linux.sh
       - run: sudo apt-get install binutils-2.26 -y
       - run: python3 script/check_release.py --version ${{ env.version }} --classifier gcc4
-        if: ${{ INPUT_SKIP_RELEASE != 'false' }}
+        if: ${{ github.event.inputs.skip_release != 'true' }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - run: PATH=/usr/lib/binutils-2.26/bin:$PATH python3 script/checkout.py --version ${{ env.version }}
@@ -79,7 +78,7 @@ jobs:
           name: Skia-${{ env.version }}-linux-Release-x64-gcc4.zip
           path: '*.zip'
       - run: python3 script/release.py --classifier gcc4
-        if: ${{ INPUT_SKIP_RELEASE != 'false' }}
+        if: ${{ github.event.inputs.skip_release != 'true' }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
@@ -95,7 +94,7 @@ jobs:
           java-version: 1.8
       - run: sudo ./script/prepare_linux.sh
       - run: python3 script/check_release.py --version ${{ env.version }} --system android --machine ${{ matrix.machine }}
-        if: ${{ INPUT_SKIP_RELEASE != 'false' }}
+        if: ${{ github.event.inputs.skip_release != 'true' }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - run: PATH=/usr/lib/binutils-2.26/bin:$PATH python3 script/checkout.py --version ${{ env.version }} --system android --machine ${{ matrix.machine }}
@@ -106,7 +105,7 @@ jobs:
           name: Skia-${{ env.version }}-android-Release-${{ matrix.machine }}.zip
           path: '*.zip'
       - run: python3 script/release.py --system android --machine ${{ matrix.machine }}
-        if: ${{ INPUT_SKIP_RELEASE != 'false' }}
+        if: ${{ github.event.inputs.skip_release != 'true' }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
@@ -116,7 +115,7 @@ jobs:
       - uses: actions/checkout@v2
       - shell: bash
         run: python3 script/check_release.py --version ${{ env.version }}
-        if: ${{ INPUT_SKIP_RELEASE != 'false' }}
+        if: ${{ github.event.inputs.skip_release != 'true' }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - uses: microsoft/setup-msbuild@v1
@@ -133,6 +132,6 @@ jobs:
           path: '*.zip'
       - shell: bash
         run: python3 script/release.py
-        if: ${{ INPUT_SKIP_RELEASE != 'false' }}
+        if: ${{ github.event.inputs.skip_release != 'true' }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
