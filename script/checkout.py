@@ -14,11 +14,12 @@ def main():
     subprocess.check_call(["git", "clone", "https://chromium.googlesource.com/chromium/tools/depot_tools.git", "depot_tools"])
 
   # Clone Skia
-  match = re.match('(m\\d+)(?:-([0-9a-f]+))?', args.version)
+  match = re.match('(m\\d+)(?:-([0-9a-f]+)(?:-([1-9][0-9]*))?)?', args.version)
   if not match:
     raise Exception('Expected --version "m<ver>-<sha>", got "' + args.version + '"')
   branch = "chrome/" + match.group(1)
   commit = match.group(2)
+  iteration = match.group(3)
 
   if os.path.exists("skia"):
     os.chdir("skia")
