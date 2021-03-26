@@ -33,7 +33,7 @@ index bf0078bf32..f30f3fd4d6 100644
 +    #if defined(SK_BUILD_FOR_WIN)
 +        int len = _snprintf_l(buffer, sizeof(buffer), gFormat, kDefaultLocale, value);
 +    #elif defined(SK_BUILD_FOR_MAC) || defined(SK_BUILD_FOR_IOS)
-+        int len = snprintf_l(buffer, sizeof(buffer), gFormat, kDefaultLocale, value);
++        int len = snprintf_l(buffer, sizeof(buffer), kDefaultLocale, gFormat, value);
 +    #else
 +        locale_t original = uselocale(kDefaultLocale);
 +        int len = snprintf(buffer, sizeof(buffer), gFormat, value);
