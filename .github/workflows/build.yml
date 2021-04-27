@@ -14,12 +14,14 @@ on:
         default: 'false'
 
 env:
-  version: m90-d9182fe437
+  version: m91-b99622c05a
 
 jobs:
-
   macos:
     runs-on: macos-10.15
+    strategy:
+      matrix:
+        arch: ["x64", "arm64"]
     steps:
       - uses: actions/checkout@v2
       - run: python3 script/check_release.py --version ${{ env.version }}
@@ -27,13 +29,13 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - run: python3 script/checkout.py --version ${{ env.version }}
-      - run: python3 script/build.py
-      - run: python3 script/archive.py --version ${{ env.version }}
+      - run: python3 script/build.py --machine ${{ matrix.machine }}
+      - run: python3 script/archive.py --version ${{ env.version }} --machine ${{ matrix.machine }}
       - uses: actions/upload-artifact@v2
         with:
-          name: Skia-${{ env.version }}-macos-Release-x64.zip
+          name: Skia-${{ env.version }}-macos-Release-${{ matrix.machine }}.zip
           path: '*.zip'
-      - run: python3 script/release.py --version ${{ env.version }}
+      - run: python3 script/release.py --version ${{ env.version }} --machine ${{ matrix.machine }}
         if: ${{ github.event.inputs.skip_release != 'true' }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
