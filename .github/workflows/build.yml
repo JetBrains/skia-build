@@ -21,7 +21,7 @@ jobs:
     runs-on: macos-10.15
     strategy:
       matrix:
-        arch: ["x64", "arm64"]
+        machine: ["x64", "arm64"]
     steps:
       - uses: actions/checkout@v2
       - run: python3 script/check_release.py --version ${{ env.version }}
