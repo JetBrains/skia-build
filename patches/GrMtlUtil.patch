@@ -1,0 +1,14 @@
+diff --git a/src/gpu/mtl/GrMtlUtil.mm b/src/gpu/mtl/GrMtlUtil.mm
+index 9d697bd79f..9711abdbf1 100644
+--- a/src/gpu/mtl/GrMtlUtil.mm
++++ b/src/gpu/mtl/GrMtlUtil.mm
+@@ -104,6 +104,9 @@ bool GrSkSLToMSL(const GrMtlGpu* gpu,
+     if (gpu->caps()->shaderCaps()->canUseFastMath()) {
+         options.fastMathEnabled = true;
+     }
++    if (@available(macOS 10.13, iOS 11.0, *)) {
++        options.languageVersion = MTLLanguageVersion2_0;
++    }
+ 
+     NSError* error = nil;
+ #if defined(SK_BUILD_FOR_MAC)
