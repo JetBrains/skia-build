@@ -22,41 +22,47 @@ jobs:
     strategy:
       matrix:
         machine: ["x64", "arm64"]
+        build_type: [Release, Debug]
+      fail-fast: false
     steps:
       - uses: actions/checkout@v2
-      - run: python3 script/check_release.py --version ${{ env.version }}
+      - run: python3 script/check_release.py --version ${{ env.version }} --build-type ${{ matrix.build_type }} --machine ${{ matrix.machine }}
         if: ${{ github.event.inputs.skip_release != 'true' }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - run: python3 script/checkout.py --version ${{ env.version }}
-      - run: python3 script/build.py --machine ${{ matrix.machine }}
-      - run: python3 script/archive.py --version ${{ env.version }} --machine ${{ matrix.machine }}
+      - run: python3 script/build.py --build-type ${{ matrix.build_type }} --machine ${{ matrix.machine }}
+      - run: python3 script/archive.py --version ${{ env.version }} --build-type ${{ matrix.build_type }} --machine ${{ matrix.machine }}
       - uses: actions/upload-artifact@v2
         with:
-          name: Skia-${{ env.version }}-macos-Release-${{ matrix.machine }}.zip
+          name: Skia-${{ env.version }}-macos-${{ matrix.build_type }}-${{ matrix.machine }}.zip
           path: '*.zip'
-      - run: python3 script/release.py --version ${{ env.version }} --machine ${{ matrix.machine }}
+      - run: python3 script/release.py --version ${{ env.version }} --build-type ${{ matrix.build_type }} --machine ${{ matrix.machine }}
         if: ${{ github.event.inputs.skip_release != 'true' }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
   linux:
     runs-on: ubuntu-16.04
+    strategy:
+      matrix:
+        build_type: [Release, Debug]
+      fail-fast: false
     steps:
       - uses: actions/checkout@v2
       - run: sudo ./script/prepare_linux.sh
-      - run: python3 script/check_release.py --version ${{ env.version }}
+      - run: python3 script/check_release.py --version ${{ env.version }} --build-type ${{ matrix.build_type }}
         if: ${{ github.event.inputs.skip_release != 'true' }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - run: PATH=/usr/lib/binutils-2.26/bin:$PATH python3 script/checkout.py --version ${{ env.version }}
-      - run: PATH=/usr/lib/binutils-2.26/bin:$PATH python3 script/build.py
-      - run: PATH=/usr/lib/binutils-2.26/bin:$PATH python3 script/archive.py --version ${{ env.version }}
+      - run: PATH=/usr/lib/binutils-2.26/bin:$PATH python3 script/build.py --build-type ${{ matrix.build_type }}
+      - run: PATH=/usr/lib/binutils-2.26/bin:$PATH python3 script/archive.py --version ${{ env.version }} --build-type ${{ matrix.build_type }}
       - uses: actions/upload-artifact@v2
         with:
-          name: Skia-${{ env.version }}-linux-Release-x64.zip
+          name: Skia-${{ env.version }}-linux-${{ matrix.build_type }}-x64.zip
           path: '*.zip'
-      - run: python3 script/release.py --version ${{ env.version }}
+      - run: python3 script/release.py --version ${{ env.version }} --build-type ${{ matrix.build_type }}
         if: ${{ github.event.inputs.skip_release != 'true' }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -113,10 +119,14 @@ jobs:
 
   windows:
     runs-on: windows-2019
+    strategy:
+      matrix:
+        build_type: [Release, Debug]
+      fail-fast: false
     steps:
       - uses: actions/checkout@v2
       - shell: bash
-        run: python3 script/check_release.py --version ${{ env.version }}
+        run: python3 script/check_release.py --version ${{ env.version }} --build-type ${{ matrix.build_type }}
         if: ${{ github.event.inputs.skip_release != 'true' }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -125,15 +135,15 @@ jobs:
       - shell: bash
         run: python3 script/checkout.py --version ${{ env.version }}
       - shell: bash
-        run: python3 script/build.py
+        run: python3 script/build.py --build-type ${{ matrix.build_type }}
       - shell: bash
-        run: python3 script/archive.py --version ${{ env.version }}
+        run: python3 script/archive.py --version ${{ env.version }} --build-type ${{ matrix.build_type }}
       - uses: actions/upload-artifact@v2
         with:
-          name: Skia-${{ env.version }}-windows-Release-x64.zip
+          name: Skia-${{ env.version }}-windows-${{ matrix.build_type }}-x64.zip
           path: '*.zip'
       - shell: bash
-        run: python3 script/release.py --version ${{ env.version }}
+        run: python3 script/release.py --version ${{ env.version }} --build-type ${{ matrix.build_type }}
         if: ${{ github.event.inputs.skip_release != 'true' }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

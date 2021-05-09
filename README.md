@@ -22,6 +22,6 @@ To build a debug build:
 
 ```sh
 python3 script/checkout.py --version m91-b99622c05a
-python3 script/build.py --debug
-python3 script/archive.py --debug
+python3 script/build.py --build-type Debug
+python3 script/archive.py --build-type Debug
 ```

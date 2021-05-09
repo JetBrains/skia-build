@@ -4,7 +4,7 @@ import argparse, base64, os, platform, re, subprocess
 
 def create_parser(version_required=False):
   parser = argparse.ArgumentParser()
-  parser.add_argument('--debug', action='store_true')
+  parser.add_argument('--build-type', default='Release')
   parser.add_argument('--version', required=version_required)
   parser.add_argument('--classifier')
   parser.add_argument('--system')
@@ -38,7 +38,7 @@ def version():
 def build_type():
   parser = create_parser()
   (args, _) = parser.parse_known_args()
-  return 'Debug' if args.debug else 'Release'
+  return args.build_type
 
 def classifier():
   parser = create_parser()
