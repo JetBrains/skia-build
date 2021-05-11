@@ -50,7 +50,7 @@ def main():
     args += [
       # 'skia_enable_gpu=true',
       # 'skia_use_gl=true',
-      'extra_cflags_cc=["-frtti"]',
+      'extra_cflags_cc=["-frtti", "-D_GLIBCXX_USE_CXX11_ABI=0"]',
       'cxx="g++-9"',
     ]
   elif 'windows' == system:
