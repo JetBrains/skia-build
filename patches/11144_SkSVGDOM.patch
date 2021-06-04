@@ -1,8 +1,24 @@
 diff --git a/modules/svg/src/SkSVGDOM.cpp b/modules/svg/src/SkSVGDOM.cpp
-index 5f16e3ee43..2ec63ec8ca 100644
+index 7915654963..509c52548d 100644
 --- a/modules/svg/src/SkSVGDOM.cpp
 +++ b/modules/svg/src/SkSVGDOM.cpp
-@@ -473,6 +473,10 @@ const SkSize& SkSVGDOM::containerSize() const {
+@@ -426,6 +426,15 @@ SkSVGDOM::SkSVGDOM(sk_sp<SkSVGSVG> root, sk_sp<SkFontMgr> fmgr,
+     , fContainerSize(fRoot->intrinsicSize(SkSVGLengthContext(SkSize::Make(0, 0))))
+ {
+     SkASSERT(fResourceProvider);
++    if (!fRoot->getViewBox().isValid()
++        && fRoot->getWidth().unit() != SkSVGLength::Unit::kPercentage
++        && fRoot->getHeight().unit() != SkSVGLength::Unit::kPercentage)
++    {
++        SkSVGLengthContext lctx(SkSize::Make(0, 0));
++        SkScalar width = lctx.resolve(fRoot->getWidth(), SkSVGLengthContext::LengthType::kHorizontal);
++        SkScalar height = lctx.resolve(fRoot->getHeight(), SkSVGLengthContext::LengthType::kVertical);
++        fRoot->setViewBox(SkRect::MakeWH(width, height));
++    }
+ }
+ 
+ void SkSVGDOM::render(SkCanvas* canvas) const {
+@@ -444,6 +453,10 @@ const SkSize& SkSVGDOM::containerSize() const {
  void SkSVGDOM::setContainerSize(const SkSize& containerSize) {
      // TODO: inval
      fContainerSize = containerSize;
