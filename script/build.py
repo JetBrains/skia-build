@@ -24,7 +24,6 @@ def main():
     'skia_use_system_zlib=false',
     'skia_use_sfntly=false',
     'skia_use_freetype=true',
-    'skia_use_system_freetype2=false',
     # 'skia_use_harfbuzz=true',
     'skia_use_system_harfbuzz=false',
     'skia_pdf_subset_harfbuzz=true',
@@ -37,6 +36,7 @@ def main():
 
   if 'macos' == system:
     args += [
+      'skia_use_system_freetype2=false',
       # 'skia_enable_gpu=true',
       # 'skia_use_gl=true',
       'skia_use_metal=true',
@@ -48,6 +48,7 @@ def main():
       args += ['extra_cflags=["-stdlib=libc++", "-mmacosx-version-min=10.13"]']
   elif 'linux' == system:
     args += [
+      'skia_use_system_freetype2=true',
       # 'skia_enable_gpu=true',
       # 'skia_use_gl=true',
       'extra_cflags_cc=["-frtti"]',
@@ -55,12 +56,14 @@ def main():
     ]
   elif 'windows' == system:
     args += [
+      'skia_use_system_freetype2=false',
       # 'skia_use_angle=true',
       'skia_use_direct3d=true',
       'extra_cflags=["-DSK_FONT_HOST_USE_SYSTEM_SETTINGS"]',
     ]
   elif 'android' == system:
     args += [
+      'skia_use_system_freetype2=false',
       'ndk="'+ ndk + '"'
     ]
 
