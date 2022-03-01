@@ -1,0 +1,283 @@
+Index: modules/skparagraph/src/TextLine.h
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/modules/skparagraph/src/TextLine.h b/modules/skparagraph/src/TextLine.h
+--- a/modules/skparagraph/src/TextLine.h	(revision 51988d0bc11e9024254789aad35b5d86bca2779c)
++++ b/modules/skparagraph/src/TextLine.h	(date 1646159232256)
+@@ -46,6 +46,7 @@
+ 
+     TextLine(ParagraphImpl* owner,
+              SkVector offset,
++             SkScalar indent,
+              SkVector advance,
+              BlockRange blocks,
+              TextRange textExcludingSpaces,
+@@ -145,6 +146,7 @@
+     SkVector fAdvance;                  // Text size
+     SkVector fOffset;                   // Text position
+     SkScalar fShift;                    // Let right
++    SkScalar fIndent;                   // Text indent
+     SkScalar fWidthWithSpaces;
+     std::unique_ptr<Run> fEllipsis;     // In case the line ends with the ellipsis
+     InternalLineMetrics fSizes;                 // Line metrics as a max of all run metrics and struts
+Index: modules/skparagraph/src/ParagraphImpl.cpp
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/modules/skparagraph/src/ParagraphImpl.cpp b/modules/skparagraph/src/ParagraphImpl.cpp
+--- a/modules/skparagraph/src/ParagraphImpl.cpp	(revision 51988d0bc11e9024254789aad35b5d86bca2779c)
++++ b/modules/skparagraph/src/ParagraphImpl.cpp	(date 1646159232254)
+@@ -524,11 +524,12 @@
+                 size_t startPos,
+                 size_t endPos,
+                 SkVector offset,
++                SkScalar indent,
+                 SkVector advance,
+                 InternalLineMetrics metrics,
+                 bool addEllipsis) {
+                 // TODO: Take in account clipped edges
+-                auto& line = this->addLine(offset, advance, textExcludingSpaces, text, textWithNewlines, clusters, clustersWithGhosts, widthWithSpaces, metrics);
++                auto& line = this->addLine(offset, indent, advance, textExcludingSpaces, text, textWithNewlines, clusters, clustersWithGhosts, widthWithSpaces, metrics);
+                 if (addEllipsis) {
+                     line.createEllipsis(maxWidth, getEllipsis(), true);
+                 }
+@@ -639,6 +640,7 @@
+ }
+ 
+ TextLine& ParagraphImpl::addLine(SkVector offset,
++                                 SkScalar indent,
+                                  SkVector advance,
+                                  TextRange textExcludingSpaces,
+                                  TextRange text,
+@@ -649,7 +651,7 @@
+                                  InternalLineMetrics sizes) {
+     // Define a list of styles that covers the line
+     auto blocks = findAllBlocks(textExcludingSpaces);
+-    return fLines.emplace_back(this, offset, advance, blocks,
++    return fLines.emplace_back(this, offset, indent, advance, blocks,
+                                textExcludingSpaces, text, textIncludingNewLines,
+                                clusters, clustersWithGhosts, widthWithSpaces, sizes);
+ }
+Index: modules/skparagraph/src/TextWrapper.h
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/modules/skparagraph/src/TextWrapper.h b/modules/skparagraph/src/TextWrapper.h
+--- a/modules/skparagraph/src/TextWrapper.h	(revision 51988d0bc11e9024254789aad35b5d86bca2779c)
++++ b/modules/skparagraph/src/TextWrapper.h	(date 1646155094881)
+@@ -176,6 +176,7 @@
+                                                   size_t startClip,
+                                                   size_t endClip,
+                                                   SkVector offset,
++                                                  SkScalar indent,
+                                                   SkVector advance,
+                                                   InternalLineMetrics metrics,
+                                                   bool addEllipsis)>;
+Index: modules/skparagraph/include/ParagraphStyle.h
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/modules/skparagraph/include/ParagraphStyle.h b/modules/skparagraph/include/ParagraphStyle.h
+--- a/modules/skparagraph/include/ParagraphStyle.h	(revision 51988d0bc11e9024254789aad35b5d86bca2779c)
++++ b/modules/skparagraph/include/ParagraphStyle.h	(date 1646056340318)
+@@ -75,6 +75,25 @@
+     bool fHalfLeading;
+ };
+ 
++struct TextIndent {
++    TextIndent();
++
++    bool operator==(const TextIndent& rhs) const {
++        return this->fFirstLine == rhs.fFirstLine &&
++               this->fRestLine == rhs.fRestLine;
++    }
++
++    SkScalar getFirstLine() const { return fFirstLine; }
++    void setFirstLine(SkScalar firstLine) { fFirstLine = firstLine; }
++
++    SkScalar getRestLine() const { return fRestLine; }
++    void setRestLine(SkScalar restLine) { fRestLine = restLine; }
++
++private:
++    SkScalar fFirstLine;
++    SkScalar fRestLine;
++};
++
+ struct ParagraphStyle {
+     ParagraphStyle();
+ 
+@@ -83,7 +102,8 @@
+                this->fEllipsis == rhs.fEllipsis &&
+                this->fEllipsisUtf16 == rhs.fEllipsisUtf16 &&
+                this->fTextDirection == rhs.fTextDirection && this->fTextAlign == rhs.fTextAlign &&
+-               this->fDefaultTextStyle == rhs.fDefaultTextStyle;
++               this->fDefaultTextStyle == rhs.fDefaultTextStyle &&
++               this->fTextIndent == rhs.fTextIndent;
+     }
+ 
+     const StrutStyle& getStrutStyle() const { return fStrutStyle; }
+@@ -122,6 +142,9 @@
+     DrawOptions getDrawOptions() { return fDrawingOptions; }
+     void setDrawOptions(DrawOptions value) { fDrawingOptions = value; }
+ 
++    const TextIndent& getTextIndent() const { return fTextIndent; }
++    void setTextIndent(TextIndent textIndent) { fTextIndent = textIndent; }
++
+ private:
+     StrutStyle fStrutStyle;
+     TextStyle fDefaultTextStyle;
+@@ -134,6 +157,7 @@
+     TextHeightBehavior fTextHeightBehavior;
+     bool fHintingIsOn;
+     DrawOptions fDrawingOptions = DrawOptions::kDirect;
++    TextIndent fTextIndent;
+ };
+ }  // namespace textlayout
+ }  // namespace skia
+Index: modules/skparagraph/src/TextLine.cpp
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/modules/skparagraph/src/TextLine.cpp b/modules/skparagraph/src/TextLine.cpp
+--- a/modules/skparagraph/src/TextLine.cpp	(revision 51988d0bc11e9024254789aad35b5d86bca2779c)
++++ b/modules/skparagraph/src/TextLine.cpp	(date 1646159525420)
+@@ -80,6 +80,7 @@
+ 
+ TextLine::TextLine(ParagraphImpl* owner,
+                    SkVector offset,
++                   SkScalar indent,
+                    SkVector advance,
+                    BlockRange blocks,
+                    TextRange textExcludingSpaces,
+@@ -100,6 +101,7 @@
+         , fAdvance(advance)
+         , fOffset(offset)
+         , fShift(0.0)
++        , fIndent(indent)
+         , fWidthWithSpaces(widthWithSpaces)
+         , fEllipsis(nullptr)
+         , fSizes(sizes)
+@@ -242,23 +244,29 @@
+ }
+ 
+ void TextLine::format(TextAlign align, SkScalar maxWidth) {
+-    SkScalar delta = maxWidth - this->width();
++    SkScalar delta = maxWidth - this->width() - fIndent;
+     if (delta <= 0) {
+         return;
+     }
+ 
+-    // We do nothing for left align
++    bool isRtl = fOwner->paragraphStyle().getTextDirection() == TextDirection::kRtl;
+     if (align == TextAlign::kJustify) {
+         if (!this->endsWithHardLineBreak()) {
+-            this->justify(maxWidth);
+-        } else if (fOwner->paragraphStyle().getTextDirection() == TextDirection::kRtl) {
++            this->justify(maxWidth - fIndent);
++            fShift = (isRtl ? 0 : fIndent);
++        } else if (isRtl) {
+             // Justify -> Right align
+             fShift = delta;
++        } else {
++            // Justify -> Left align
++            fShift = fIndent;
+         }
+     } else if (align == TextAlign::kRight) {
+         fShift = delta;
+     } else if (align == TextAlign::kCenter) {
+-        fShift = delta / 2;
++        fShift = delta / 2 + (isRtl ? 0 : fIndent);
++    } else if (align == TextAlign::kLeft) {
++        fShift = fIndent;
+     }
+ }
+ 
+Index: modules/skparagraph/src/ParagraphStyle.cpp
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/modules/skparagraph/src/ParagraphStyle.cpp b/modules/skparagraph/src/ParagraphStyle.cpp
+--- a/modules/skparagraph/src/ParagraphStyle.cpp	(revision 51988d0bc11e9024254789aad35b5d86bca2779c)
++++ b/modules/skparagraph/src/ParagraphStyle.cpp	(date 1646056153665)
+@@ -19,6 +19,11 @@
+     fEnabled = false;
+ }
+ 
++TextIndent::TextIndent() {
++    fFirstLine = 0.0;
++    fRestLine = 0.0;
++}
++
+ ParagraphStyle::ParagraphStyle() {
+     fTextAlign = TextAlign::kStart;
+     fTextDirection = TextDirection::kLtr;
+Index: modules/skparagraph/src/TextWrapper.cpp
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/modules/skparagraph/src/TextWrapper.cpp b/modules/skparagraph/src/TextWrapper.cpp
+--- a/modules/skparagraph/src/TextWrapper.cpp	(revision 51988d0bc11e9024254789aad35b5d86bca2779c)
++++ b/modules/skparagraph/src/TextWrapper.cpp	(date 1646156972408)
+@@ -285,9 +285,11 @@
+     auto start = span.begin();
+     InternalLineMetrics maxRunMetrics;
+     bool needEllipsis = false;
++    TextIndent indent = parent->paragraphStyle().getTextIndent();
++    SkScalar lineIndent = indent.getFirstLine();
+     while (fEndLine.endCluster() != end) {
+ 
+-        lookAhead(maxWidth, end);
++        lookAhead(maxWidth - lineIndent, end);
+ 
+         auto lastLine = (hasEllipsis && unlimitedLines) || fLineNumber >= maxLines;
+         needEllipsis = hasEllipsis && !endlessLine && lastLine;
+@@ -377,6 +379,7 @@
+                 fEndLine.startPos(),
+                 fEndLine.endPos(),
+                 SkVector::Make(0, fHeight),
++                lineIndent,
+                 SkVector::Make(fEndLine.width(), lineHeight),
+                 fEndLine.metrics(),
+                 needEllipsis && !fHardLineBreak);
+@@ -406,6 +409,8 @@
+             fHardLineBreak = false;
+             break;
+         }
++
++        lineIndent = indent.getRestLine();
+ 
+         ++fLineNumber;
+     }
+@@ -478,6 +483,7 @@
+                 0,
+                 0,
+                 SkVector::Make(0, fHeight),
++                lineIndent,
+                 SkVector::Make(0, fEndLine.metrics().height()),
+                 fEndLine.metrics(),
+                 needEllipsis);
+Index: modules/skparagraph/src/ParagraphImpl.h
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/modules/skparagraph/src/ParagraphImpl.h b/modules/skparagraph/src/ParagraphImpl.h
+--- a/modules/skparagraph/src/ParagraphImpl.h	(revision 51988d0bc11e9024254789aad35b5d86bca2779c)
++++ b/modules/skparagraph/src/ParagraphImpl.h	(date 1646155094879)
+@@ -125,7 +125,7 @@
+ 
+     size_t lineNumber() override { return fLines.size(); }
+ 
+-    TextLine& addLine(SkVector offset, SkVector advance,
++    TextLine& addLine(SkVector offset, SkScalar indent, SkVector advance,
+                       TextRange textExcludingSpaces, TextRange text, TextRange textIncludingNewlines,
+                       ClusterRange clusters, ClusterRange clustersWithGhosts, SkScalar widthWithSpaces,
+                       InternalLineMetrics sizes);
