@@ -43,7 +43,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
   linux:
-    runs-on: ubuntu-16.04
+    runs-on: ubuntu-22.04
     strategy:
       matrix:
         build_type: [Release, Debug]
@@ -69,7 +69,7 @@ jobs:
 
   linux-gcc4:
     runs-on: ubuntu-latest
-    container: ubuntu:14.04
+    container: ubuntu:22.04
     steps:
       - uses: actions/checkout@v2
       - run: sudo ./script/prepare_linux.sh
@@ -91,7 +91,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
   android:
-    runs-on: ubuntu-16.04
+    runs-on: ubuntu-22.04
     strategy:
       matrix:
         machine: [arm, arm64, x64, x86]
